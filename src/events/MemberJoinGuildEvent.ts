@@ -22,7 +22,10 @@ class MemberJoinGuildEvent extends DiscordEventListener<Events.GuildMemberAdd> {
 
     const channel = member.guild.channels.cache.get(appSettings.channels.gate.id)
 
-    if (!channel) return
+    if (!channel) {
+      this.logger.warn("The gate channel is not found.")
+      return
+    }
 
     // Create banner
     const background = await loadImage(join("resources", "images", "welcome-banner.png"))
@@ -68,7 +71,7 @@ class MemberJoinGuildEvent extends DiscordEventListener<Events.GuildMemberAdd> {
 
     // Send message
     if (channel.isSendable()) {
-      channel.send({
+      await channel.send({
         embeds: [embed],
         files: [attachment]
       })

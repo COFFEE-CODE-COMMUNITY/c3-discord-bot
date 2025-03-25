@@ -3,12 +3,17 @@ import { Client, GatewayIntentBits } from "discord.js"
 import { readdirSync } from "fs"
 import { container } from "./inversify.config"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
+import Logger from "./Logger"
 
 @injectable()
 class BotClient {
   private client: Client
 
-  public constructor() {
+  public constructor(private logger: Logger) {
+    this.logger.setContextName(this.constructor.name)
+
+    this.logger.verbose('Discord bot client instantiated')
+
     this.client = new Client({
       intents: [
         GatewayIntentBits.Guilds,
@@ -20,11 +25,14 @@ class BotClient {
   }
 
   public async start(token: string): Promise<void> {
-    await this.registerEventHandlers()
+    this.logger.info('Starting discord bot client')
+
+    await this.mapEventHandlers()
     await this.client.login(token)
   }
 
-  private async registerEventHandlers(): Promise<void> {
+  private async mapEventHandlers(): Promise<void> {
+    this.logger.verbose('Mapping event handlers')
     const eventFiles = readdirSync('./src/events').filter(file => file.endsWith('.ts'))
 
     for (const file of eventFiles) {
@@ -39,6 +47,8 @@ class BotClient {
       } else {
         this.client.on(instance.event, instance.execute)
       }
+
+      this.logger.verbose(`Mapped ${event.name} with "${instance.event}" event`)
     }
   }
 }

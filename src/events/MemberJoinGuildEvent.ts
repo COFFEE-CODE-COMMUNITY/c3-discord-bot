@@ -1,4 +1,4 @@
-import { EmbedBuilder, Events, GuildMember } from "discord.js"
+import { AttachmentBuilder, EmbedBuilder, Events, GuildMember } from "discord.js"
 import Logger from "../infrastructures/Logger"
 import appSettings from "../../app.settings.json"
 import { createCanvas, loadImage } from "@napi-rs/canvas"
@@ -7,7 +7,7 @@ import { injectable } from "inversify"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
 
 @injectable()
-class UserJoinGuild extends DiscordEventListener<Events.GuildMemberAdd> {
+class MemberJoinGuildEvent extends DiscordEventListener<Events.GuildMemberAdd> {
   public readonly event = Events.GuildMemberAdd
 
   public constructor(private logger: Logger) {
@@ -31,22 +31,28 @@ class UserJoinGuild extends DiscordEventListener<Events.GuildMemberAdd> {
 
     ctx.drawImage(background, 0, 0, canvas.width, canvas.height)
 
-    ctx.font = "bold 105px Poppins"
+    ctx.font = "bold 72px Poppins"
     ctx.textAlign = "center"
     ctx.fillStyle = "#1f6faf"
-    ctx.fillText(`WELCOME, ${member.user.username.toUpperCase()}`, canvas.width / 2, canvas.height / 2, (canvas.height / 2) - 150)
+    ctx.fillText(`WELCOME, ${member.user.username.toUpperCase()}`, canvas.width / 2, canvas.height / 2 + 50)
 
     const avatar = await loadImage(member.user.displayAvatarURL())
+    const avatarSize = 250
+    const avatarX = (canvas.width - avatarSize) / 2
+    const avatarY = (canvas.height / 2) - avatarSize - 40 // Adjust distance from text
+
     ctx.beginPath()
-    ctx.arc(250, 250, 200, 0, Math.PI * 2, true)
+    ctx.arc(canvas.width / 2, avatarY + avatarSize / 2, avatarSize / 2, 0, Math.PI * 2, true)
     ctx.closePath()
     ctx.clip()
-    ctx.drawImage(avatar, 50, 50, 250, 250)
+    ctx.drawImage(avatar, avatarX, avatarY, avatarSize, avatarSize)
+
+    const attachment = new AttachmentBuilder(canvas.toBuffer("image/png"), { name: "welcome-banner.png" })
 
     // Create embed
     const embed = new EmbedBuilder()
       .setTitle("C3")
-      .setAuthor({ name: "Coffe Code Community" })
+      .setAuthor({ name: "Coffee Code Community" })
       .setDescription(
         `Welcome ${member.toString()}\n\n` +
         "*Hai, Hai! Selamat Datang di C3*\n\n" + // Italic style
@@ -56,19 +62,20 @@ class UserJoinGuild extends DiscordEventListener<Events.GuildMemberAdd> {
         "• Mau tahu lebih banyak soal C3? Cek di <#1289860748448759857>\n" +
         "• Punya ide keren atau masukan? Langsung tulis di <#1347594181752786995>"
       )
-      .setColor(0x3498db) // Warna biru
-      .setImage("https://cdn.discordapp.com/attachments/1348339821503844493/1353752979869536277/Blue_and_White_Modern_Welcome_Banner_1.png?ex=67e2cc35&is=67e17ab5&hm=c148774cc63803419d5eef179779f87a9aae414876bcbbc3adbed796a2d4ba7c&") // Ganti dengan URL banner welcome
-      .setFooter({ text: "Copyright© 2024 Coffe Code Community" })
+      .setColor(0x3498db)
+      .setImage("attachment://welcome-banner.png")
+      .setFooter({ text: "Copyright© 2024 Coffee Code Community" })
 
     // Send message
-    // await channel.send({ embeds: [embed], files: [{ attachment: canvas.toBuffer(), name: "welcome-banner.png" }] })
     if (channel.isSendable()) {
       channel.send({
         embeds: [embed],
-        files: [{ attachment: canvas.toBuffer("image/png"), name: "welcome-banner.png" }]
+        files: [attachment]
       })
+    } else {
+      this.logger.warn("The channel is not sendable.")
     }
   }
 }
 
-export default UserJoinGuild
+export default MemberJoinGuildEvent

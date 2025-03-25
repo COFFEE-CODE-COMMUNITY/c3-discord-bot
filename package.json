@@ -18,6 +18,28 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@types/reflect-metadata": "^0.0.5"
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.13.13",
+    "@types/reflect-metadata": "^0.0.5",
+    "jest": "^29.7.0",
+    "jest-mock-extended": "^4.0.0-beta1",
+    "ts-jest": "^29.3.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "test",
+    "testRegex": ".*\\.test\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
   }
 }

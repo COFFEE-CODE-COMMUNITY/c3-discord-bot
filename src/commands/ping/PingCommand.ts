@@ -4,7 +4,9 @@ import {
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder
 } from "discord.js"
+import { injectable } from "inversify"
 
+@injectable()
 class PingCommand extends DiscordSlashCommand {
   public options: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName("ping")
@@ -25,3 +27,5 @@ class PingCommand extends DiscordSlashCommand {
     }
   }
 }
+
+export default PingCommand

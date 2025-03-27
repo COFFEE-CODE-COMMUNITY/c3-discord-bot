@@ -1,22 +1,20 @@
 import 'reflect-metadata'
-import dotenv from "dotenv"
 import { GlobalFonts } from "@napi-rs/canvas"
 import { join } from "path"
 import BotClient from "./infrastructures/BotClient"
 import { Container, injectable } from "inversify"
-import { Command } from "commander"
+import { Command, Option } from "commander"
 import * as process from "node:process"
 import * as fs from "fs/promises"
 import * as path from "node:path"
 import DiscordEventListener from "./abstracts/DiscordEventListener"
 import DiscordSlashCommand from "./abstracts/DiscordSlashCommand"
 import { REST, Routes } from "discord.js"
+import config from "./infrastructures/config"
 
 @injectable()
 class Main {
-  private readonly DISCORD_BOT_TOKEN: string = process.env.DISCORD_BOT_TOKEN as string
-
-  public constructor(private readonly bot: BotClient) {
+  public constructor(private readonly bot: BotClient, private readonly container: Container) {
     const program = new Command('bot')
 
     program
@@ -25,34 +23,58 @@ class Main {
       .action(async () => this.startBot())
 
     program
-      .command('register')
-      .command('command')
+      .command('register-command')
       .description('Register bot command to discord.')
       .action(async () => this.registerCommand())
+
+    program
+      .command('delete-command')
+      .description('Delete all registered commands.')
+      .addOption(new Option('-g, --global', 'Delete global commands.').default(false))
+      .action(options => this.deleteCommand(options))
 
     program.parse(process.argv)
   }
 
   private async startBot(): Promise<void> {
-    await this.bot.start(this.DISCORD_BOT_TOKEN)
+    await this.bot.start(config.get('bot.token'))
   }
 
   private async registerCommand(): Promise<void> {
-    const rest = new REST().setToken(this.DISCORD_BOT_TOKEN)
+    const rest = new REST().setToken(config.get('bot.token'))
+    const commands = await this.container.getAllAsync(DiscordSlashCommand)
 
-    rest.put(Routes)
+    await rest.put(Routes.applicationCommands(config.get('bot.clientId')),
+      { body: commands.filter(command => !command.isC3Only).map(command => command.options.toJSON() ) })
+    await rest.put(Routes.applicationGuildCommands(config.get('bot.clientId'), config.get('c3.guild.id')),
+      { body: commands.filter(command => command.isC3Only).map(command => command.options.toJSON() ) })
+
+    console.log(`Successfully registered ${commands.length} commands.`)
+  }
+
+  private async deleteCommand(options: { global: boolean }) {
+    const rest = new REST().setToken(config.get('bot.token'))
+
+    if (options.global) {
+      await rest.put(Routes.applicationCommands(config.get('bot.clientId')), { body: [] })
+
+      console.log('Successfully deleted all global commands.')
+    } else {
+      await rest.put(Routes.applicationGuildCommands(config.get('bot.clientId'), config.get('c3.guild.id')), { body: [] })
+
+      console.log('Successfully deleted all C3 guild commands.')
+    }
   }
 
   static {
-    dotenv.config()
-
     GlobalFonts.registerFromPath(join(__dirname, 'resources', 'fonts', 'Poppins-Bold.ttf'), 'Poppins')
   }
 
   private static container = new Container({ defaultScope: 'Singleton' })
 
   public static async main(): Promise<void> {
-    await this.scanInjectableClasses(path.resolve(process.env.NODE_ENV == 'development' ? 'src' : 'dist/src'))
+    await this.scanInjectableClasses(path.resolve(config.get('env') == 'production' ? 'dist/src' : 'src'))
+
     this.container.bind(Container).toConstantValue(this.container)
     this.container.bind(Main).toSelf()
     this.container.get(Main)

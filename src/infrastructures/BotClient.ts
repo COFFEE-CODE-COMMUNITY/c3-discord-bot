@@ -1,8 +1,8 @@
 import { Container, injectable } from "inversify"
-import { Client, GatewayIntentBits } from "discord.js"
-import { readdirSync } from "fs"
+import { Client, Events, GatewayIntentBits } from "discord.js"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
 import Logger from "./Logger"
+import DiscordSlashCommand from "../abstracts/DiscordSlashCommand"
 
 @injectable()
 class BotClient {
@@ -27,6 +27,7 @@ class BotClient {
     this.logger.info('Starting discord bot client')
 
     await this.mapEventHandlers()
+    await this.mapChatCommandHandlers()
     await this.client.login(token)
   }
 
@@ -43,6 +44,25 @@ class BotClient {
 
       this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.event}" event`)
     }
+  }
+
+  private async mapChatCommandHandlers(): Promise<void> {
+    this.logger.verbose('Mapping chat command handlers')
+
+    const chatCommandInstances = await this.container.getAllAsync(DiscordSlashCommand)
+    const commandMap = new Map<string, DiscordSlashCommand>()
+
+    for (const instance of chatCommandInstances) {
+      console.log(instance.options.options)
+      commandMap.set(instance.options.name, instance)
+      this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.options.name}" command`)
+    }
+
+    this.client.on(Events.InteractionCreate, async interaction => {
+      if(!interaction.isChatInputCommand()) return
+      interaction.options.getSubcommand()
+      // interaction.
+    })
   }
 }
 

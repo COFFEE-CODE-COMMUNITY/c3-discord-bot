@@ -1,5 +1,6 @@
 import { injectable } from "inversify"
 import { Logger as WinstonLogger, transports, format } from "winston";
+import config from "./config"
 
 @injectable("Transient")
 export default class Logger {
@@ -19,7 +20,7 @@ export default class Logger {
   public constructor() {
     this.logger = new WinstonLogger({
       levels: this.LOGGER_LEVER,
-      level: process.env.NODE_ENV === 'production' ? 'info' : 'silly',
+      level: config.get('env') === 'production' ? 'info' : 'silly',
       transports: [
         new transports.Console({
           format: format.combine(

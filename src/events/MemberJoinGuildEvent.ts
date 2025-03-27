@@ -1,10 +1,10 @@
 import { AttachmentBuilder, EmbedBuilder, Events, GuildMember } from "discord.js"
 import Logger from "../infrastructures/Logger"
-import appSettings from "../../app.settings.json"
 import { createCanvas, loadImage } from "@napi-rs/canvas"
 import { join } from "path"
 import { injectable } from "inversify"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
+import config from "../infrastructures/config"
 
 @injectable()
 class MemberJoinGuildEvent extends DiscordEventListener<Events.GuildMemberAdd> {
@@ -19,7 +19,7 @@ class MemberJoinGuildEvent extends DiscordEventListener<Events.GuildMemberAdd> {
   public async execute(member: GuildMember): Promise<void> {
     this.logger.verbose(`${member.user.username} has joined the guild.`)
 
-    const channel = member.guild.channels.cache.get(appSettings.channels.gate.id)
+    const channel = member.guild.channels.cache.get(config.get('c3.channels.gate.id'))
 
     if (!channel) {
       this.logger.warn("The gate channel is not found.")

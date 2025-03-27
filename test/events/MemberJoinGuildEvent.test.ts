@@ -1,7 +1,7 @@
 import DiscordEventListener from "../../src/abstracts/DiscordEventListener"
 import MemberJoinGuildEvent from "../../src/events/MemberJoinGuildEvent"
 import Logger from '../../src/infrastructures/Logger'
-import appSettings from '../../app.settings.json'
+import config from '../../src/infrastructures/config'
 import { DeepMockProxy, mockDeep } from "jest-mock-extended"
 import { GuildMember, TextChannel } from "discord.js"
 import { GlobalFonts } from "@napi-rs/canvas"
@@ -33,7 +33,7 @@ describe("MemberJoinGuildEvent", () => {
 
     await event.execute(guildMemberMock)
 
-    expect(guildMemberMock.guild.channels.cache.get).toHaveBeenCalledWith(appSettings.channels.gate.id)
+    expect(guildMemberMock.guild.channels.cache.get).toHaveBeenCalledWith(config.get('c3.channels.gate.id'))
     expect(guildMemberMock.user.username).toBe('username')
     expect(guildMemberMock.user.displayAvatarURL).toHaveBeenCalled()
     expect(textChannelMock.send).toHaveBeenCalledWith({

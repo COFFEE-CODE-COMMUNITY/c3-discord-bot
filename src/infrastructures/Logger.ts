@@ -1,7 +1,7 @@
 import { injectable } from "inversify"
 import { Logger as WinstonLogger, transports, format } from "winston";
 
-@injectable()
+@injectable("Transient")
 export default class Logger {
   private logger: WinstonLogger
 

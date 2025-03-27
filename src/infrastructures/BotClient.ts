@@ -1,7 +1,6 @@
-import { injectable } from "inversify"
+import { Container, injectable } from "inversify"
 import { Client, GatewayIntentBits } from "discord.js"
 import { readdirSync } from "fs"
-import { container } from "./inversify.config"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
 import Logger from "./Logger"
 
@@ -9,7 +8,7 @@ import Logger from "./Logger"
 class BotClient {
   private client: Client
 
-  public constructor(private logger: Logger) {
+  public constructor(private logger: Logger, private container: Container) {
     this.logger.setContextName(this.constructor.name)
 
     this.logger.verbose('Discord bot client instantiated')
@@ -33,22 +32,16 @@ class BotClient {
 
   private async mapEventHandlers(): Promise<void> {
     this.logger.verbose('Mapping event handlers')
-    const eventFiles = readdirSync('./src/events').filter(file => file.endsWith('.ts'))
+    const eventInstances = await this.container.getAllAsync(DiscordEventListener)
 
-    for (const file of eventFiles) {
-      const { default: event } = await import(`../events/${file}`)
-
-      container.bind(event.name).to(event).inSingletonScope()
-
-      const instance = container.get<DiscordEventListener<any>>(event.name)
-
+    for (const instance of eventInstances) {
       if (instance.once) {
         this.client.once(instance.event, (...args) => instance.execute(...args))
       } else {
         this.client.on(instance.event, (...args) => instance.execute(...args))
       }
 
-      this.logger.verbose(`Mapped ${event.name} with "${instance.event}" event`)
+      this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.event}" event`)
     }
   }
 }

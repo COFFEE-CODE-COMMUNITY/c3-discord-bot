@@ -11,7 +11,6 @@ class DebugEvent extends DiscordEventListener<Events.Debug> {
     super()
 
     this.logger.setContextName(this.constructor.name)
-    this.execute = this.execute.bind(this)
   }
 
   public execute(message: string): void | Promise<void> {

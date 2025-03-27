@@ -43,9 +43,9 @@ class BotClient {
       const instance = container.get<DiscordEventListener<any>>(event.name)
 
       if (instance.once) {
-        this.client.once(instance.event, instance.execute)
+        this.client.once(instance.event, (...args) => instance.execute(...args))
       } else {
-        this.client.on(instance.event, instance.execute)
+        this.client.on(instance.event, (...args) => instance.execute(...args))
       }
 
       this.logger.verbose(`Mapped ${event.name} with "${instance.event}" event`)

@@ -11,7 +11,6 @@ class ErrorEvent extends DiscordEventListener<Events.Error> {
     super()
 
     this.logger.setContextName(this.constructor.name)
-    this.execute = this.execute.bind(this)
   }
 
   public execute(error: Error): void | Promise<void> {

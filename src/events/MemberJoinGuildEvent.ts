@@ -14,7 +14,6 @@ class MemberJoinGuildEvent extends DiscordEventListener<Events.GuildMemberAdd> {
     super()
 
     this.logger.setContextName(this.constructor.name)
-    this.execute = this.execute.bind(this)
   }
 
   public async execute(member: GuildMember): Promise<void> {

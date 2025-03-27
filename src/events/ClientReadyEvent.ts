@@ -11,7 +11,6 @@ class ClientReadyEvent extends DiscordEventListener<Events.ClientReady> {
     super()
 
     this.logger.setContextName(this.constructor.name)
-    this.execute = this.execute.bind(this)
   }
 
   public execute(client: Client<true>): void {

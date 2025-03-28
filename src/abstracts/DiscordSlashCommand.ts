@@ -1,13 +1,10 @@
 import {
-  ChatInputCommandInteraction,
-  SlashCommandBuilder,
-  SlashCommandOptionsOnlyBuilder
+  SlashCommandBuilder
 } from "discord.js"
 
 abstract class DiscordSlashCommand {
   public isC3Only: boolean = false
-  public abstract options: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder
-  public abstract execute(interaction: ChatInputCommandInteraction): void | Promise<void>
+  public abstract slashCommand: SlashCommandBuilder
 }
 
 export default DiscordSlashCommand

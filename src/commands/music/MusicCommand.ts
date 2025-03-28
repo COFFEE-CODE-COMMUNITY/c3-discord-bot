@@ -1,10 +1,10 @@
 import DiscordSlashCommand from "../../abstracts/DiscordSlashCommand"
-import { ChannelType, Interaction, SlashCommandBuilder } from "discord.js"
+import { ChannelType, SlashCommandBuilder } from "discord.js"
 import { injectable } from "inversify"
 
 @injectable()
 class MusicCommand extends DiscordSlashCommand {
-  public options: SlashCommandBuilder = new SlashCommandBuilder()
+  public slashCommand: SlashCommandBuilder = new SlashCommandBuilder()
     .setName("music")
     .setDescription("Play music to the voice channel.")
     .addSubcommand(subcommand => subcommand
@@ -51,10 +51,6 @@ class MusicCommand extends DiscordSlashCommand {
       .setName("shuffle")
       .setDescription("Shuffle the queue.")
     ) as SlashCommandBuilder
-
-  public execute(interaction: Interaction): void | Promise<void> {
-    return undefined
-  }
 }
 
 export default MusicCommand

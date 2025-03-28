@@ -11,6 +11,7 @@ import DiscordEventListener from "./abstracts/DiscordEventListener"
 import DiscordSlashCommand from "./abstracts/DiscordSlashCommand"
 import { REST, Routes } from "discord.js"
 import config from "./infrastructures/config"
+import CommandHandler from "./abstracts/CommandHandler"
 
 @injectable()
 class Main {
@@ -45,9 +46,9 @@ class Main {
     const commands = await this.container.getAllAsync(DiscordSlashCommand)
 
     await rest.put(Routes.applicationCommands(config.get('bot.clientId')),
-      { body: commands.filter(command => !command.isC3Only).map(command => command.options.toJSON() ) })
+      { body: commands.filter(command => !command.isC3Only).map(command => command.slashCommand.toJSON() ) })
     await rest.put(Routes.applicationGuildCommands(config.get('bot.clientId'), config.get('c3.guild.id')),
-      { body: commands.filter(command => command.isC3Only).map(command => command.options.toJSON() ) })
+      { body: commands.filter(command => command.isC3Only).map(command => command.slashCommand.toJSON() ) })
 
     console.log(`Successfully registered ${commands.length} commands.`)
   }
@@ -97,6 +98,8 @@ class Main {
             this.container.bind(DiscordEventListener).to(module.default).inSingletonScope()
           } else if (DiscordSlashCommand.isPrototypeOf(module.default)) {
             this.container.bind(DiscordSlashCommand).to(module.default).inSingletonScope()
+          } else if(CommandHandler.isPrototypeOf(module.default)) {
+            this.container.bind(CommandHandler).to(module.default).inSingletonScope()
           } else {
             this.container.bind(module.default).toSelf()
           }

@@ -2,7 +2,7 @@ import { Container, injectable } from "inversify"
 import { Client, Events, GatewayIntentBits } from "discord.js"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
 import Logger from "./Logger"
-import DiscordSlashCommand from "../abstracts/DiscordSlashCommand"
+import CommandHandler from "../abstracts/CommandHandler"
 
 @injectable()
 class BotClient {
@@ -49,19 +49,51 @@ class BotClient {
   private async mapChatCommandHandlers(): Promise<void> {
     this.logger.verbose('Mapping chat command handlers')
 
-    const chatCommandInstances = await this.container.getAllAsync(DiscordSlashCommand)
-    const commandMap = new Map<string, DiscordSlashCommand>()
+    const commandHandlerInstances = await this.container.getAllAsync(CommandHandler)
+    const handlerMap = new Map<string, CommandHandler>()
 
-    for (const instance of chatCommandInstances) {
-      console.log(instance.options.options)
-      commandMap.set(instance.options.name, instance)
-      this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.options.name}" command`)
+    for (const instance of commandHandlerInstances) {
+      handlerMap.set(instance.prefix.join('.'), instance)
+      this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.prefix.join(' ')}" prefix`)
     }
 
     this.client.on(Events.InteractionCreate, async interaction => {
       if(!interaction.isChatInputCommand()) return
-      interaction.options.getSubcommand()
-      // interaction.
+
+      let prefix = interaction.commandName
+      let subcommand: string | null = null
+      let subcommandGroup: string | null = null
+
+      try {
+        subcommand = interaction.options.getSubcommand()
+        subcommandGroup = interaction.options.getSubcommandGroup()
+      } catch(error) {}
+
+      if(subcommandGroup) {
+        prefix += `.${subcommandGroup}.${subcommand}`
+      } else if (subcommand) {
+        prefix += `.${subcommand}`
+      }
+
+      this.logger.debug(`Received command: ${prefix}`)
+
+      try {
+        const handler = handlerMap.get(prefix)
+
+        if (!handler) {
+          this.logger.warn(`No handler found for "${prefix}" prefix`)
+
+          interaction.reply({ content: 'No command found', ephemeral: true })
+          return
+        }
+
+        await handler.handle(interaction)
+      } catch(error) {
+        this.logger.error((error as Error).message)
+        interaction.reply({ content: 'An error occurred while executing the command', ephemeral: true })
+
+        return
+      }
     })
   }
 }

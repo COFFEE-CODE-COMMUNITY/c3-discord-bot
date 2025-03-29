@@ -44,6 +44,22 @@ const config = convict({
         env: 'C3_GUILD_ID'
       }
     }
+  },
+  spotify: {
+    clientId: {
+      doc: 'Spotify client ID.',
+      format: String,
+      default: '',
+      env: 'SPOTIFY_CLIENT_ID',
+      sensitive: true
+    },
+    clientSecret: {
+      doc: 'Spotify client secret.',
+      format: String,
+      default: '',
+      env: 'SPOTIFY_CLIENT_SECRET',
+      sensitive: true
+    }
   }
 })
 

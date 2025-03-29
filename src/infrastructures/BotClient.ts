@@ -18,6 +18,7 @@ class BotClient {
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent,
       ]
     })
@@ -83,14 +84,15 @@ class BotClient {
         if (!handler) {
           this.logger.warn(`No handler found for "${prefix}" prefix`)
 
-          interaction.reply({ content: 'No command found', ephemeral: true })
+          await interaction.reply({ content: 'No command found', ephemeral: true })
           return
         }
 
         await handler.handle(interaction)
       } catch(error) {
         this.logger.error((error as Error).message)
-        interaction.reply({ content: 'An error occurred while executing the command', ephemeral: true })
+        console.error(error)
+        await interaction.reply({ content: 'An error occurred while executing the command', ephemeral: true })
 
         return
       }

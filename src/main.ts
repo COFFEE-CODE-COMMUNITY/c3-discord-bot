@@ -12,6 +12,7 @@ import DiscordSlashCommand from "./abstracts/DiscordSlashCommand"
 import { REST, Routes } from "discord.js"
 import config from "./infrastructures/config"
 import CommandHandler from "./abstracts/CommandHandler"
+import container from "./infrastructures/container"
 
 @injectable()
 class Main {
@@ -71,14 +72,12 @@ class Main {
     GlobalFonts.registerFromPath(join(__dirname, 'resources', 'fonts', 'Poppins-Bold.ttf'), 'Poppins')
   }
 
-  private static container = new Container({ defaultScope: 'Singleton' })
-
   public static async main(): Promise<void> {
     await this.scanInjectableClasses(path.resolve(config.get('env') == 'production' ? 'dist/src' : 'src'))
 
-    this.container.bind(Container).toConstantValue(this.container)
-    this.container.bind(Main).toSelf()
-    this.container.get(Main)
+    container.bind(Container).toConstantValue(container)
+    container.bind(Main).toSelf()
+    container.get(Main)
   }
 
   private static async scanInjectableClasses(dirPath: string) {
@@ -95,13 +94,13 @@ class Main {
 
         if (module?.default && Reflect.getMetadata(INJECTABLE_METADATA_KEY, module.default)) {
           if (DiscordEventListener.isPrototypeOf(module.default)) {
-            this.container.bind(DiscordEventListener).to(module.default).inSingletonScope()
+            container.bind(DiscordEventListener).to(module.default).inSingletonScope()
           } else if (DiscordSlashCommand.isPrototypeOf(module.default)) {
-            this.container.bind(DiscordSlashCommand).to(module.default).inSingletonScope()
+            container.bind(DiscordSlashCommand).to(module.default).inSingletonScope()
           } else if(CommandHandler.isPrototypeOf(module.default)) {
-            this.container.bind(CommandHandler).to(module.default).inSingletonScope()
+            container.bind(CommandHandler).to(module.default).inSingletonScope()
           } else {
-            this.container.bind(module.default).toSelf()
+            container.bind(module.default).toSelf()
           }
         }
       }

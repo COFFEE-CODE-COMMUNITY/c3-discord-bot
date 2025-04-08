@@ -66,8 +66,9 @@ export default class Logger {
     this.logger.log('warn', message)
   }
 
-  public error(message: any): void {
+  public error(message: string, error?: Error): void {
     this.logger.log('error', message)
+    console.error(error)
   }
 
   public fatal(message: any): void {

@@ -18,6 +18,10 @@ class MusicContext {
 
     return musicPlayer
   }
+
+  public hasConnection(guildId: string): boolean {
+    return this.audioConnection.has(guildId)
+  }
 }
 
 export default MusicContext

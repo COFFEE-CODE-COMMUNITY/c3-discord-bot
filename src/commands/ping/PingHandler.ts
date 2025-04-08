@@ -7,7 +7,9 @@ class PingHandler extends CommandHandler {
   public prefix: string[] = ["ping"]
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-    await interaction.reply("Pong!")
+    const isEphemeral = interaction.options.getBoolean("ephemeral") ?? false
+
+    await interaction.reply({ content: "Pong!", ephemeral: isEphemeral })
   }
 }
 

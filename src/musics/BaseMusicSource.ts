@@ -7,6 +7,8 @@ abstract class BaseMusicSource {
   protected abstract audioUrl: string
 
   public abstract play(): void
+  public abstract pause(): void
+  public abstract stop(): void
 }
 
 export default BaseMusicSource

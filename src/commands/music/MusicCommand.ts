@@ -50,6 +50,10 @@ class MusicCommand extends DiscordSlashCommand {
     .addSubcommand(subcommand => subcommand
       .setName("shuffle")
       .setDescription("Shuffle the queue.")
+    )
+    .addSubcommand(subcommand => subcommand
+      .setName("leave")
+      .setDescription("Leave bot from the voice channel.")
     ) as SlashCommandBuilder
 }
 

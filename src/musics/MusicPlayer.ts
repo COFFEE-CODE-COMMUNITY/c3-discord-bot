@@ -14,6 +14,8 @@ import YouTubeMusicSource from "./YouTubeMusicSource"
 import BaseMusicSource from "./BaseMusicSource"
 import SpotifyService from "../services/SpotifyService"
 import playdl from 'play-dl'
+import container from "../infrastructures/container"
+import DiscordReplyException from "../exceptions/DiscordReplyException"
 
 export interface MusicPlayerConfiguration {
   channelId: string
@@ -25,7 +27,8 @@ class MusicPlayer {
   private readonly connection: VoiceConnection
   private readonly player: AudioPlayer
   private readonly musics: BaseMusicSource[] = []
-  private readonly logger: Logger = new Logger()
+  private readonly logger: Logger = container.get(Logger)
+  private readonly spotifyService: SpotifyService = container.get(SpotifyService)
 
   public constructor(configuration: MusicPlayerConfiguration) {
     this.logger.setContextName(this.constructor.name)
@@ -39,7 +42,7 @@ class MusicPlayer {
 
     this.connection.on('debug', message => this.logger.debug(message))
 
-    this.connection.on('error', error => this.logger.error(error))
+    this.connection.on('error', error => this.logger.error(error.message))
 
     this.connection.on(VoiceConnectionStatus.Ready, () => this.logger.verbose(`Voice connection on ${configuration.guildId} is ready`))
 
@@ -53,7 +56,7 @@ class MusicPlayer {
 
     this.player.on("debug", message => this.logger.debug(message))
 
-    this.player.on("error", error => this.logger.error(error))
+    this.player.on("error", error => this.logger.error(error.message))
 
     this.player.on(AudioPlayerStatus.Paused, () => {
       this.logger.verbose(`Audio player on guild ${configuration.guildId} with channel ${configuration.channelId} is paused`)
@@ -69,9 +72,15 @@ class MusicPlayer {
 
     this.player.on(AudioPlayerStatus.Idle, async () => {
       this.logger.verbose(`Audio player on guild ${configuration.guildId} with channel ${configuration.channelId} is idle`)
+    })
 
-      if (this.musics.length > 0) {
-        await this.play()
+    this.player.on("stateChange", (oldState, newState) => {
+      if (oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle) {
+        this.musics.shift()
+
+        if (this.musics.length > 0) {
+          this.musics[0].play()
+        }
       }
     })
 
@@ -79,11 +88,17 @@ class MusicPlayer {
   }
 
   public async play() {
-    await this.musics[0].play()
+    if (this.player.state.status == AudioPlayerStatus.Idle && this.musics.length > 0) {
+      this.musics[0].play()
+    }
     // this.player.play()
   }
 
   public async pause() {
+
+  }
+
+  public stop(): void {
 
   }
 
@@ -103,16 +118,75 @@ class MusicPlayer {
   }
 
   private async addTrackFromSpotify(url: URL) {
-    const api = SpotifyService.getSpotifyAPI()
-
+    this.logger.silly(url.toString())
     if (url.pathname.match(/\/track\//)) {
-      const trackId = url.pathname.split('/').pop()
-      const track = await api.tracks.get(trackId || '')
-      const artist = track.artists[0].name
-      const title = track.name
+      try {
+        const trackId = url.pathname.split('/').pop()
+        const track = await this.spotifyService.tracks.get(trackId || '')
+        const artist = track.artists[0].name
+        const title = track.name
 
-      const dl = await playdl.search(`${artist} ${title}`, { limit: 1, source: { youtube: 'video' } })
-      this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+        const dl = await playdl.search(`${artist} ${title}`, { limit: 1, source: { youtube: 'video' } })
+        this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+      } catch(error: any) {
+        this.logger.warn(error.message)
+
+        throw new DiscordReplyException({
+          content: 'Spotify track not found.',
+          flags: "Ephemeral"
+        })
+      }
+    } else if (url.pathname.match(/\/playlist\//)) {
+      this.logger.debug('Spotify playlist detected')
+
+      try {
+        const playlistId = url.pathname.split('/').pop()
+
+        let currentOffset = 0
+        let totalTracks = 0
+        do {
+          const tracks = await this.spotifyService.playlists.getPlaylistItems(
+            playlistId || '',
+            undefined,
+            undefined,
+            undefined,
+            currentOffset
+          )
+          currentOffset += tracks.items.length
+          totalTracks ||= tracks.total
+
+          const dlSearch = await Promise.all(tracks.items.map(track => {
+            this.logger.debug(`Adding ${track.track.artists[0].name} - ${track.track.name} to queue`)
+            return playdl.search(`${track.track.artists[0].name} ${track.track.name}`, { limit: 1, source: { youtube: 'video' } })
+          }))
+
+          dlSearch.forEach(dl => {
+            this.logger.debug(`Adding ${dl[0].title} to queue`)
+            this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+          })
+
+          // for (const track of tracks.items) {
+          //   const artist = track.track.artists[0].name
+          //   const title = track.track.name
+          //
+          //   const dl = await playdl.search(`${artist} ${title}`, { limit: 1, source: { youtube: 'video' } })
+          //   this.logger.debug(`Adding ${artist} - ${title} to queue`)
+          //   this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+          // }
+        } while (currentOffset <= totalTracks)
+      } catch (error: any) {
+        this.logger.warn(error.message)
+
+        throw new DiscordReplyException({
+          content: 'Spotify playlist not found.',
+          flags: "Ephemeral"
+        })
+      }
+    } else {
+      throw new DiscordReplyException({
+        content: 'Spotify URL must be from track or playlist.',
+        flags: "Ephemeral"
+      })
     }
   }
 }

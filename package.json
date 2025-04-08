@@ -37,7 +37,9 @@
     "@types/reflect-metadata": "^0.0.5",
     "jest": "^29.7.0",
     "jest-mock-extended": "^4.0.0-beta1",
-    "ts-jest": "^29.3.0"
+    "ts-jest": "^29.3.0",
+    "typescript": "^5.8.3",
+    "ts-node": "^10.9.2"
   },
   "jest": {
     "moduleFileExtensions": [

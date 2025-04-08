@@ -36,8 +36,11 @@ class YouTubeMusicSource extends BaseMusicSource {
         this.audioUrl
       ], { stdio: ['ignore', 'pipe', 'ignore'] })
       const audioResource = createAudioResource(this.process.stdout, {
-        inputType: StreamType.Arbitrary
+        inputType: StreamType.Arbitrary,
+        // inlineVolume: true
       })
+
+      // audioResource.volume?.setVolume(1)
 
       this.audioPlayer.play(audioResource)
     } catch (error) {

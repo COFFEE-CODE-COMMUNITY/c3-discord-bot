@@ -109,7 +109,12 @@ class MusicPlayer {
       switch (url.hostname) {
         case 'open.spotify.com':
           await this.addTrackFromSpotify(url)
-          break;
+          break
+        case 'youtu.be':
+        case 'www.youtube.com':
+        case 'youtube.com':
+          await this.addTrackFromYouTube(url)
+          break
       }
     } catch (_) {
     }
@@ -186,6 +191,49 @@ class MusicPlayer {
       throw new DiscordReplyException({
         content: 'Spotify URL must be from track or playlist.',
         flags: "Ephemeral"
+      })
+    }
+  }
+
+  private async addTrackFromYouTube(url: URL) {
+    this.logger.silly(url.toString())
+
+    if (playdl.yt_validate(url.toString()) === 'video') {
+      try {
+        const info = await playdl.video_info(url.toString())
+        this.logger.debug(`Adding ${info.video_details.title} to queue`)
+        this.musics.push(new YouTubeMusicSource(this.player, url.toString()))
+      } catch (error: any) {
+        this.logger.warn(error.message)
+        throw new DiscordReplyException({
+          content: 'YouTube video not found.',
+          flags: 'Ephemeral'
+        })
+      }
+
+    } else if (playdl.yt_validate(url.toString()) === 'playlist') {
+      try {
+        const playlist = await playdl.playlist_info(url.toString(), { incomplete: true })
+        const videos = await playlist.all_videos()
+
+        for (const video of videos) {
+          this.logger.debug(`Adding ${video.title} to queue`)
+          this.musics.push(new YouTubeMusicSource(this.player, video.url))
+        }
+
+        this.logger.info(`${videos.length} tracks added from YouTube playlist`)
+      } catch (error: any) {
+        this.logger.warn(error.message)
+        throw new DiscordReplyException({
+          content: 'YouTube playlist not found.',
+          flags: 'Ephemeral'
+        })
+      }
+
+    } else {
+      throw new DiscordReplyException({
+        content: 'URL must be a YouTube video or playlist.',
+        flags: 'Ephemeral'
       })
     }
   }

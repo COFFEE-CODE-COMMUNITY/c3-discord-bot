@@ -55,8 +55,8 @@ jobs:
             echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
             echo "DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}" >> .env
             echo "DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}" >> .env
-            echo "C3_GUILD_ID=${{ env.C3_GUILD_ID }}" >> .env
-            echo "C3_CHANNEL_GATE_ID=${{ env.C3_CHANNEL_GATE_ID }}" >> .env
+            echo "C3_GUILD_ID=${{ vars.C3_GUILD_ID }}" >> .env
+            echo "C3_CHANNEL_GATE_ID=${{ vars.C3_CHANNEL_GATE_ID }}" >> .env
             
             docker stop c3-discord-bot || true
             docker rm c3-discord-bot || true

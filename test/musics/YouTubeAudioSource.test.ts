@@ -67,7 +67,7 @@ describe('YouTubeAudioSource', () => {
     test('restarts playing if already playing', async () => {
       audio['elapsedTime'] = 10
 
-      await audio.play()
+      audio.play()
 
       expect(spawn).toHaveBeenCalledWith("yt-dlp", [
         "-o", "-",

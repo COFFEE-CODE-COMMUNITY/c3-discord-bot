@@ -20,13 +20,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Setup env
-        run: |
-          echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" >> .env
-          echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
-
       - name: Run tests
         run: npm test
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
 
   deploy:
     runs-on: ubuntu-latest

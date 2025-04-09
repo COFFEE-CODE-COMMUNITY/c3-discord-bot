@@ -14,6 +14,4 @@ const containerMock = mock<Container>()
 
 jest.mock('../../src/infrastructures/container', () => containerMock)
 
-describe('MusicPlayer', () => {
-
-})
+test("MusicPlayer test", () => {})

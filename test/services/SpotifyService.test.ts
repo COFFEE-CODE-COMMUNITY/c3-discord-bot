@@ -11,7 +11,6 @@ describe('SpotifyService', () => {
     describe('getPlaylist', () => {
       it('should return a playlist', async () => {
         const playlist = await spotifyService.playlists.getPlaylistItems('0VwpqaUVJxPJEPrrl7mMWx', undefined, undefined, undefined, 100)
-        console.log(playlist)
         expect(playlist).toBeDefined()
       })
     })

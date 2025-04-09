@@ -84,9 +84,11 @@ class BotClient {
         if (!handler) {
           this.logger.warn(`No handler found for "${prefix}" prefix`)
 
-          await interaction.reply({ content: 'No command found', ephemeral: true })
+          // await interaction.reply({ content: 'No command found', ephemeral: true })
           return
         }
+
+        this.logger.debug(`Executing command handler for "${prefix}" prefix`)
 
         await handler.handle(interaction)
       } catch(error) {

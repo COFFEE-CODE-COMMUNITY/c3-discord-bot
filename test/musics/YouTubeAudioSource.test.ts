@@ -53,7 +53,6 @@ describe('YouTubeAudioSource', () => {
         "-q", "--no-warnings",
         "--no-cache-dir",
         "--quiet",
-        "--audio-format",
         "--extract-audio",
         "",
         audioUrl
@@ -76,7 +75,6 @@ describe('YouTubeAudioSource', () => {
         "-q", "--no-warnings",
         "--no-cache-dir",
         "--quiet",
-        "--audio-format",
         "--extract-audio",
         "--start-time=10",
         audioUrl

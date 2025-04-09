@@ -36,7 +36,6 @@ class YouTubeAudioSource extends BaseAudioSource {
         "-q", "--no-warnings",
         "--no-cache-dir",
         "--quiet",
-        "--audio-format",
         "--extract-audio",
         this.elapsedTime > 0 ? `--start-time=${this.elapsedTime}` : "",
         this.audioUrl

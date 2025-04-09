@@ -22,6 +22,15 @@ class MusicContext {
   public hasConnection(guildId: string): boolean {
     return this.audioConnection.has(guildId)
   }
+
+  public deleteConnection(guildId: string): void {
+    const musicPlayer = this.audioConnection.get(guildId)
+
+    if (musicPlayer) {
+      musicPlayer.disconnect()
+      this.audioConnection.delete(guildId)
+    }
+  }
 }
 
 export default MusicContext

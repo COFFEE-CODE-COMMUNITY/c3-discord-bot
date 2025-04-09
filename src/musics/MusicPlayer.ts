@@ -89,6 +89,8 @@ class MusicPlayer {
 
   public async play() {
     if (this.player.state.status == AudioPlayerStatus.Idle && this.musics.length > 0) {
+      this.logger.debug('Playing music')
+
       this.musics[0].play()
     }
     // this.player.play()
@@ -100,6 +102,11 @@ class MusicPlayer {
 
   public stop(): void {
 
+  }
+
+  public disconnect(): void {
+    this.player.stop(true)
+    this.connection.destroy()
   }
 
   public async addTrack(query: string): Promise<EmbedBuilder> {

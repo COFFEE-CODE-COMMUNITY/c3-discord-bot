@@ -1,15 +1,18 @@
-import BaseMusicSource from "./BaseMusicSource"
+import BaseAudioSource from "./BaseAudioSource"
 import { AudioPlayer, AudioPlayerStatus, createAudioResource, StreamType } from "@discordjs/voice"
-import MusicSource from "./MusicSource"
-import { spawn } from 'child_process'
+import { spawn, ChildProcessByStdio } from 'child_process'
+import { Readable } from 'stream'
+import { performance } from 'perf_hooks'
 import Logger from "../infrastructures/Logger"
 import container from "../infrastructures/container"
 import DiscordReplyException from "../exceptions/DiscordReplyException"
 
-class YouTubeMusicSource extends BaseMusicSource {
+class YouTubeAudioSource extends BaseAudioSource {
   private readonly logger: Logger = container.get(Logger)
-  private process: any = null
-  protected source: MusicSource = MusicSource.YOUTUBE
+  private process: ChildProcessByStdio<null, Readable, null> | null = null
+  private startTimestamp: number = 0
+  private elapsedTime: number = 0
+
   protected audioPlayer: AudioPlayer
   protected audioUrl: string
 
@@ -22,7 +25,9 @@ class YouTubeMusicSource extends BaseMusicSource {
     this.audioUrl = audioUrl
   }
 
-  public async play(): Promise<void> {
+  public play(): void {
+    this.startTimestamp = performance.now()
+
     try {
       this.process = spawn("yt-dlp", [
         "-o", "-",
@@ -31,8 +36,9 @@ class YouTubeMusicSource extends BaseMusicSource {
         "-q", "--no-warnings",
         "--no-cache-dir",
         "--quiet",
-        // "--audio-format"
+        "--audio-format",
         "--extract-audio",
+        this.elapsedTime > 0 ? `--start-time=${this.elapsedTime}` : "",
         this.audioUrl
       ], { stdio: ['ignore', 'pipe', 'ignore'] })
       const audioResource = createAudioResource(this.process.stdout, {
@@ -61,7 +67,10 @@ class YouTubeMusicSource extends BaseMusicSource {
     }
 
     if (this.audioPlayer.pause()) {
-      this.process.stdin.pause()
+      const delta = performance.now() - this.startTimestamp
+      this.elapsedTime += (delta / 1000)
+
+      this.process!.kill('SIGKILL')
 
       this.logger.debug('Music paused')
     } else {
@@ -69,7 +78,7 @@ class YouTubeMusicSource extends BaseMusicSource {
     }
   }
 
-  public async stop(): Promise<void> {
+  public stop(): void {
     if (this.audioPlayer.state.status != AudioPlayerStatus.Playing) {
       this.logger.warn('Music is not playing')
 
@@ -77,7 +86,7 @@ class YouTubeMusicSource extends BaseMusicSource {
     }
 
     if (this.audioPlayer.stop()) {
-      this.process.kill('SIGKILL')
+      this.process!.kill('SIGKILL')
 
       this.logger.debug('Music stopped')
     } else {
@@ -86,4 +95,4 @@ class YouTubeMusicSource extends BaseMusicSource {
   }
 }
 
-export default YouTubeMusicSource
+export default YouTubeAudioSource

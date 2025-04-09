@@ -10,8 +10,8 @@ import {
 import Logger from "../infrastructures/Logger"
 import config from "../infrastructures/config"
 import { EmbedBuilder } from "discord.js"
-import YouTubeMusicSource from "./YouTubeMusicSource"
-import BaseMusicSource from "./BaseMusicSource"
+import YouTubeAudioSource from "./YouTubeAudioSource"
+import BaseAudioSource from "./BaseAudioSource"
 import SpotifyService from "../services/SpotifyService"
 import playdl from 'play-dl'
 import container from "../infrastructures/container"
@@ -26,7 +26,7 @@ export interface MusicPlayerConfiguration {
 class MusicPlayer {
   private readonly connection: VoiceConnection
   private readonly player: AudioPlayer
-  private readonly musics: BaseMusicSource[] = []
+  private readonly musics: BaseAudioSource[] = []
   private readonly logger: Logger = container.get(Logger)
   private readonly spotifyService: SpotifyService = container.get(SpotifyService)
 
@@ -132,7 +132,7 @@ class MusicPlayer {
         const title = track.name
 
         const dl = await playdl.search(`${artist} ${title}`, { limit: 1, source: { youtube: 'video' } })
-        this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+        this.musics.push(new YouTubeAudioSource(this.player, dl[0].url))
       } catch(error: any) {
         this.logger.warn(error.message)
 
@@ -167,7 +167,7 @@ class MusicPlayer {
 
           dlSearch.forEach(dl => {
             this.logger.debug(`Adding ${dl[0].title} to queue`)
-            this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+            this.musics.push(new YouTubeAudioSource(this.player, dl[0].url))
           })
 
           // for (const track of tracks.items) {
@@ -176,7 +176,7 @@ class MusicPlayer {
           //
           //   const dl = await playdl.search(`${artist} ${title}`, { limit: 1, source: { youtube: 'video' } })
           //   this.logger.debug(`Adding ${artist} - ${title} to queue`)
-          //   this.musics.push(new YouTubeMusicSource(this.player, dl[0].url))
+          //   this.musics.push(new YouTubeAudioSource(this.player, dl[0].url))
           // }
         } while (currentOffset <= totalTracks)
       } catch (error: any) {
@@ -202,7 +202,7 @@ class MusicPlayer {
       try {
         const info = await playdl.video_info(url.toString())
         this.logger.debug(`Adding ${info.video_details.title} to queue`)
-        this.musics.push(new YouTubeMusicSource(this.player, url.toString()))
+        this.musics.push(new YouTubeAudioSource(this.player, url.toString()))
       } catch (error: any) {
         this.logger.warn(error.message)
         throw new DiscordReplyException({
@@ -218,7 +218,7 @@ class MusicPlayer {
 
         for (const video of videos) {
           this.logger.debug(`Adding ${video.title} to queue`)
-          this.musics.push(new YouTubeMusicSource(this.player, video.url))
+          this.musics.push(new YouTubeAudioSource(this.player, video.url))
         }
 
         this.logger.info(`${videos.length} tracks added from YouTube playlist`)

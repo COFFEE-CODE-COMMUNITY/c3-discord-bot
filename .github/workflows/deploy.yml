@@ -28,39 +28,39 @@ jobs:
       - name: Run tests
         run: npm test
 
-    deploy:
-      runs-on: ubuntu-latest
-      needs: test
-      steps:
-        - name: Checkout repo
-          uses: actions/checkout@v3
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+        -name: Checkout repo
+        uses: actions/checkout@v3
 
-        - name: Copy file to server
-          uses: appleboy/scp-action@v0.1.4
-          with:
-            host: ${{ secrets.SSH_HOST }}
-            username: ${{ secrets.SSH_USER }}
-            key: ${{ secrets.SSH_KEY }}
-            source: "."
-            target: "/home/${{ secrets.SSH_USER }}/c3-discord-bot"
+        -name: Copy file to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "."
+          target: "/home/${{ secrets.SSH_USER }}/c3-discord-bot"
 
-        - name: Build and run bot
-          uses: appleboy/ssh-action@v1.0.0
-          with:
-            host: ${{ secrets.SSH_HOST }}
-            username: ${{ secrets.SSH_USER }}
-            key: ${{ secrets.SSH_KEY }}
-            script: |
-              cd /home/${{ secrets.SSH_USER }}/c3-discord-bot
+        -name: Build and run bot
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/${{ secrets.SSH_USER }}/c3-discord-bot
               
-              echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" >> .env
-              echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
-              echo "DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}" >> .env
-              echo "DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}" >> .env
-              echo "C3_GUILD_ID=${{ env.C3_GUILD_ID }}" >> .env
-              echo "C3_CHANNEL_GATE_ID=${{ env.C3_CHANNEL_GATE_ID }}" >> .env
+             echo "SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}" >> .env
+            echo "SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}" >> .env
+            echo "DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}" >> .env
+            echo "DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}" >> .env
+            echo "C3_GUILD_ID=${{ env.C3_GUILD_ID }}" >> .env
+            echo "C3_CHANNEL_GATE_ID=${{ env.C3_CHANNEL_GATE_ID }}" >> .env
               
-              docker stop c3-discord-bot || true
-              docker rm c3-discord-bot || true
-              docker build -t c3-discord-bot .
-              docker run -d --name c3-discord-bot --env-file .env c3-discord-bot
+            docker stop c3-discord-bot || true
+            docker rm c3-discord-bot || true
+            docker build -t c3-discord-bot .
+            docker run -d --name c3-discord-bot --env-file .env c3-discord-bot

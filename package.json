@@ -6,7 +6,7 @@
     "test": "jest",
     "dev": "ts-node src/main.ts start",
     "build": "tsc",
-    "start": "node --env NODE_ENV=production dist/src/main.js "
+    "start": "node dist/src/main.js "
   },
   "keywords": [],
   "author": "",

@@ -26,8 +26,7 @@ class YouTubeAudioSource extends BaseAudioSource {
   }
 
   public play(): void {
-    this.startTimestamp = performance.now()
-
+    this.logger.debug(`Time elapsed: ${this.elapsedTime}`)
     try {
       this.process = spawn("yt-dlp", [
         "-o", "-",
@@ -37,14 +36,21 @@ class YouTubeAudioSource extends BaseAudioSource {
         "--no-cache-dir",
         "--quiet",
         "--extract-audio",
-        this.elapsedTime > 0 ? `--start-time=${this.elapsedTime}` : "",
+        ...(this.elapsedTime > 0 ? [`--start-time=${this.elapsedTime}`] : []),
         this.audioUrl
       ], { stdio: ['ignore', 'pipe', 'ignore'] })
       const audioResource = createAudioResource(this.process.stdout, {
         inputType: StreamType.Arbitrary
       })
 
-      this.audioPlayer.play(audioResource)
+      if (this.elapsedTime > 0) {
+        this.audioPlayer.unpause()
+        this.audioPlayer.play(audioResource)
+      } else {
+        this.audioPlayer.play(audioResource)
+      }
+
+      this.startTimestamp = performance.now()
     } catch (error) {
       this.logger.error('Failed to play music', (error as Error))
 
@@ -66,7 +72,7 @@ class YouTubeAudioSource extends BaseAudioSource {
       const delta = performance.now() - this.startTimestamp
       this.elapsedTime += (delta / 1000)
 
-      this.process!.kill('SIGKILL')
+      this.process!.kill('SIGTERM')
 
       this.logger.debug('Music paused')
     } else {

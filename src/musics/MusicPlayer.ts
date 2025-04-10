@@ -16,6 +16,7 @@ import SpotifyService from "../services/SpotifyService"
 import playdl from 'play-dl'
 import container from "../infrastructures/container"
 import DiscordReplyException from "../exceptions/DiscordReplyException"
+import discordReplyException from "../exceptions/DiscordReplyException"
 
 export interface MusicPlayerConfiguration {
   channelId: string
@@ -93,12 +94,60 @@ class MusicPlayer {
 
       this.musics[0].play()
     }
-    // this.player.play()
   }
 
   public async pause() {
+    if (this.player.state.status === AudioPlayerStatus.Playing) {
+      this.musics[0].pause()
 
+      this.logger.debug('Paused current track')
+    } else if (this.player.state.status === AudioPlayerStatus.Paused) {
+      this.musics[0].play()
+
+      this.logger.debug('Unpaused current track')
+    }
   }
+
+  public async next() {
+    if (this.musics.length > 0) {
+      this.musics[0].stop()
+
+      this.logger.debug('Skipping music')
+    } else {
+      throw new DiscordReplyException({
+        content: 'Need atleast 1 song in queue.',
+        flags: "Ephemeral"
+      })
+    }
+  }
+
+  public async shuffle() {
+    if (this.musics.length <= 1) {
+      throw new discordReplyException({
+        content: 'Need atleast 2 songs for shuffle',
+        flags: 'Ephemeral'
+      })
+    }
+
+    const [current, ...rest] = this.musics
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[rest[i], rest[j]] = [rest[j], rest[i]]
+    }
+
+    this.musics.splice(0, this.musics.length, current, ...rest)
+    this.logger.debug('Playlist has been shuffled.')
+  }
+
+  // public async resume() {
+  //   if (this.player.state.status === AudioPlayerStatus.Paused) {
+  //     this.musics[0].resume()
+  //
+  //     this.logger.debug('Resumed current track')
+  //   } else {
+  //
+  //   }
+  // }
 
   public stop(): void {
 
@@ -109,27 +158,29 @@ class MusicPlayer {
     this.connection.destroy()
   }
 
-  public async addTrack(query: string): Promise<EmbedBuilder> {
+  public async addTracks(query: string): Promise<EmbedBuilder> {
     try {
       const url = new URL(query)
 
       switch (url.hostname) {
         case 'open.spotify.com':
-          await this.addTrackFromSpotify(url)
+          await this.addTracksFromSpotify(url)
           break
         case 'youtu.be':
         case 'www.youtube.com':
         case 'youtube.com':
-          await this.addTrackFromYouTube(url)
+        case 'music.youtube.com':
+          await this.addTracksFromYouTube(url)
           break
       }
     } catch (_) {
+      await this.addTracksFromQuery(query)
     }
 
     return new EmbedBuilder()
   }
 
-  private async addTrackFromSpotify(url: URL) {
+  private async addTracksFromSpotify(url: URL) {
     this.logger.silly(url.toString())
     if (url.pathname.match(/\/track\//)) {
       try {
@@ -149,7 +200,7 @@ class MusicPlayer {
         })
       }
     } else if (url.pathname.match(/\/playlist\//)) {
-      this.logger.debug('Spotify playlist detected')
+      this.logger.silly('Spotify playlist detected')
 
       try {
         const playlistId = url.pathname.split('/').pop()
@@ -185,7 +236,7 @@ class MusicPlayer {
           //   this.logger.debug(`Adding ${artist} - ${title} to queue`)
           //   this.musics.push(new YouTubeAudioSource(this.player, dl[0].url))
           // }
-        } while (currentOffset <= totalTracks)
+        } while (currentOffset < totalTracks)
       } catch (error: any) {
         this.logger.warn(error.message)
 
@@ -202,7 +253,7 @@ class MusicPlayer {
     }
   }
 
-  private async addTrackFromYouTube(url: URL) {
+  private async addTracksFromYouTube(url: URL) {
     this.logger.silly(url.toString())
 
     if (playdl.yt_validate(url.toString()) === 'video') {
@@ -240,6 +291,34 @@ class MusicPlayer {
     } else {
       throw new DiscordReplyException({
         content: 'URL must be a YouTube video or playlist.',
+        flags: 'Ephemeral'
+      })
+    }
+  }
+
+  private async addTracksFromQuery(query: string) {
+    this.logger.silly(`Searching YouTube for query: ${query}`)
+
+    try {
+      const results = await playdl.search(query, {
+        source: { youtube: 'video' },
+        limit: 1
+      })
+
+      if (!results.length) {
+        throw new DiscordReplyException({
+          content: 'No results found on YouTube.',
+          flags: 'Ephemeral'
+        })
+      }
+
+      const track = results[0]
+      this.logger.debug(`Found YouTube video: ${track.title} - ${track.url}`)
+      this.musics.push(new YouTubeAudioSource(this.player, track.url))
+    } catch (error: any) {
+      this.logger.warn(error.message)
+      throw new DiscordReplyException({
+        content: 'Failed to search YouTube.',
         flags: 'Ephemeral'
       })
     }

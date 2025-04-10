@@ -36,7 +36,7 @@ class PlayMusicHandler extends CommandHandler {
     }
 
     const musicPlayer = this.musicContext.getConnection(voiceChannel?.guildId!)
-    await musicPlayer.addTrack(query)
+    await musicPlayer.addTracks(query)
     await musicPlayer.play()
 
     await interaction.reply({

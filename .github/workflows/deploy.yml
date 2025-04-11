@@ -57,6 +57,7 @@ jobs:
             echo "DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}" >> .env
             echo "C3_GUILD_ID=${{ vars.C3_GUILD_ID }}" >> .env
             echo "C3_CHANNEL_GATE_ID=${{ vars.C3_CHANNEL_GATE_ID }}" >> .env
+            echo "${{ secrets.YOUTUBE_COOKIES }}" >> youtube-cookies.txt
             
             docker stop c3-discord-bot || true
             docker rm c3-discord-bot || true

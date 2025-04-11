@@ -13,6 +13,7 @@ import { REST, Routes } from "discord.js"
 import config from "./infrastructures/config"
 import CommandHandler from "./abstracts/CommandHandler"
 import container from "./infrastructures/container"
+import play from 'play-dl'
 
 @injectable()
 class Main {
@@ -73,6 +74,12 @@ class Main {
   }
 
   public static async main(): Promise<void> {
+    await play.setToken({
+      youtube: {
+        cookie: await this.getYoutubeCookie()
+      }
+    })
+
     await this.scanInjectableClasses(path.resolve(config.get('env') == 'production' ? 'dist/src' : 'src'))
 
     container.bind(Container).toConstantValue(container)
@@ -105,6 +112,19 @@ class Main {
         }
       }
     }
+  }
+
+  private static async getYoutubeCookie() {
+    const raw = await fs.readFile(path.resolve('youtube-cookies.txt'), 'utf-8');
+    const lines = raw
+      .split('\n')
+      .filter(line => line && !line.startsWith('#')) // skip comments
+      .map(line => {
+        const parts = line.split('\t');
+        return `${parts[5]}=${parts[6]}`;
+      });
+
+    return lines.join('; ');
   }
 }
 Main.main()

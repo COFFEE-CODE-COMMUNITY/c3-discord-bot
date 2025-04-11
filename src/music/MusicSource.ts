@@ -4,7 +4,7 @@ import { Readable } from "stream"
 import MusicMetadata from "./MusicMetadata"
 
 abstract class MusicSource {
-  private readonly logger: Logger = container.get(Logger)
+  protected readonly logger: Logger = container.get(Logger)
 
   protected readonly musicMetadata!: MusicMetadata
 

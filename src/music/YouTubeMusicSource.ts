@@ -7,8 +7,11 @@ import { spawn } from "child_process"
 import MusicMetadata from "./MusicMetadata"
 
 class YouTubeMusicSource extends MusicSource {
+
   public constructor(private readonly url: URL) {
     super()
+
+    this.logger.setContextName(this.constructor.name)
   }
 
   public getAudioStream(): PassThrough {
@@ -20,12 +23,15 @@ class YouTubeMusicSource extends MusicSource {
       "--no-cache-dir",
       "--quiet",
       "--extract-audio",
+      "--cookies", "youtube-cookies.txt",
       this.url.toString()
     ], { stdio: ['ignore', 'pipe', 'ignore'] })
 
     const audioStream = new PassThrough()
 
     ytdlp.stdout.pipe(audioStream)
+
+    this.logger.debug(`yt-dlp process started with PID: ${ytdlp.pid}`)
 
     return audioStream
   }

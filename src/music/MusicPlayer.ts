@@ -20,7 +20,7 @@ class MusicPlayer extends VoicePlayer {
 
   protected override onAudioStateChange(oldState: AudioPlayerState, newState: AudioPlayerNewState) {
     if (oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle) {
-      this.logger.debug('Playing next music')
+      this.logger.debug('Playing next music ')
       this.musicQueue.shift()
 
       if (this.musicQueue.length > 0) {

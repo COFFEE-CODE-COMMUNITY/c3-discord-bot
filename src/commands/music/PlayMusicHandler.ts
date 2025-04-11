@@ -1,13 +1,14 @@
 import CommandHandler from "../../abstracts/CommandHandler"
 import { injectable } from "inversify"
 import { ChatInputCommandInteraction, GuildMember, VoiceChannel } from "discord.js"
-import MusicContext from "../../musics/MusicContext"
+import VoiceManager from "../../voice/VoiceManager"
+import MusicPlayer from "../../music/MusicPlayer"
 
 @injectable()
 class PlayMusicHandler extends CommandHandler {
   public prefix: string[] = ["music", "play"]
 
-  public constructor(private readonly musicContext: MusicContext) {
+  public constructor(private readonly voiceManager: VoiceManager) {
     super()
   }
 
@@ -27,17 +28,23 @@ class PlayMusicHandler extends CommandHandler {
       return
     }
 
-    if (!this.musicContext.hasConnection(voiceChannel.guildId)) {
-      this.musicContext.createConnection({
-        channelId: voiceChannel?.id!,
-        guildId: voiceChannel?.guildId!,
-        adapterCreator: voiceChannel?.guild.voiceAdapterCreator!
+    let musicPlayer: MusicPlayer
+
+    if (!this.voiceManager.hasConnection(voiceChannel.guildId)) {
+      musicPlayer = new MusicPlayer({
+        guildId: voiceChannel.guildId,
+        channelId: voiceChannel.id,
+        adapterCreator: voiceChannel.guild.voiceAdapterCreator
       })
+
+      this.voiceManager.setConnection(voiceChannel.guildId, musicPlayer)
+    } else {
+      musicPlayer = this.voiceManager.getConnection(voiceChannel.guildId)!
     }
 
-    const musicPlayer = this.musicContext.getConnection(voiceChannel?.guildId!)
     await musicPlayer.addTracks(query)
-    await musicPlayer.play()
+
+    musicPlayer.play()
 
     await interaction.reply({
       content: `Playing ${query}`,

@@ -1,21 +1,23 @@
 import CommandHandler from "../../abstracts/CommandHandler"
 import { ChatInputCommandInteraction } from "discord.js"
-import MusicContext from "../../musics/MusicContext"
+import VoiceManager from "../../voice/VoiceManager"
 import { injectable } from "inversify"
+import MusicPlayer from "../../music/MusicPlayer"
 
 @injectable()
 class NextMusicHandler extends CommandHandler {
   public prefix: string[] = ["music", "next"]
 
-  public constructor(private readonly musicContext: MusicContext) {
+  public constructor(private readonly musicContext: VoiceManager) {
     super()
   }
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const guildId = interaction.guildId as string
+    const musicPlayer = this.musicContext.getConnection<MusicPlayer>(guildId)
 
-    if (this.musicContext.hasConnection(guildId)) {
-      await this.musicContext.getConnection(guildId).next()
+    if (musicPlayer) {
+      musicPlayer.next()
 
       await interaction.reply({
         content: "Skipped the music.",

@@ -1,5 +1,5 @@
-import { ChatInputCommandInteraction, GuildMember } from "discord.js"
-import MusicContext from "../../musics/MusicContext"
+import { ChatInputCommandInteraction } from "discord.js"
+import VoiceManager from '../../voice/VoiceManager'
 import CommandHandler from "../../abstracts/CommandHandler"
 import { injectable } from "inversify"
 import Logger from "../../infrastructures/Logger"
@@ -8,7 +8,7 @@ import Logger from "../../infrastructures/Logger"
 class LeaveChannelHandler extends CommandHandler {
   public prefix: string[] = ["music", "leave"]
 
-  public constructor(private readonly musicContext: MusicContext, private logger: Logger) {
+  public constructor(private readonly musicContext: VoiceManager, private logger: Logger) {
     super()
 
     this.logger.setContextName(this.constructor.name)
@@ -24,12 +24,12 @@ class LeaveChannelHandler extends CommandHandler {
 
       await interaction.reply({
         content: "Left the voice channel.",
-        ephemeral: true
+        flags: "Ephemeral"
       })
     } else {
       await interaction.reply({
         content: "I am not in a voice channel.",
-        ephemeral: true
+        flags: "Ephemeral"
       })
     }
   }

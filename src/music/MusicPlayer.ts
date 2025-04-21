@@ -196,6 +196,9 @@ class MusicPlayer extends VoicePlayer {
           content: 'YouTube video not found.',
           flags: 'Ephemeral'
         })
+
+        "user get all"
+        "user get by-role"
       }
 
     } else if (playdl.yt_validate(url.toString()) === 'playlist') {

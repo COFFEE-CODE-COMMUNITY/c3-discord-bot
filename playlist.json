@@ -1,0 +1,72 @@
+{
+  "_type": "url",
+  "ie_key": "Youtube",
+  "id": "sf0QFJTvOLM",
+  "url": "https://www.youtube.com/watch?v=sf0QFJTvOLM",
+  "title": "ヨルシカ - へび（OFFICIAL VIDEO）",
+  "description": null,
+  "duration": 257,
+  "channel_id": "UCRIgIJQWuBJ0Cv_VlU3USNA",
+  "channel": "ヨルシカ / n-buna Official",
+  "channel_url": "https://www.youtube.com/channel/UCRIgIJQWuBJ0Cv_VlU3USNA",
+  "uploader": "ヨルシカ / n-buna Official",
+  "uploader_id": null,
+  "uploader_url": null,
+  "thumbnails": [
+    {
+      "url": "https://i.ytimg.com/vi/sf0QFJTvOLM/hqdefault.jpg?sqp=-oaymwEbCKgBEF5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLCIf4RC_uHKN4BtI2g_Fs3qg5fDJg",
+      "height": 94,
+      "width": 168
+    },
+    {
+      "url": "https://i.ytimg.com/vi/sf0QFJTvOLM/hqdefault.jpg?sqp=-oaymwEbCMQBEG5IVfKriqkDDggBFQAAiEIYAXABwAEG&rs=AOn4CLDJBVJTLMENUabcla50NL4mlnw_bg",
+      "height": 110,
+      "width": 196
+    },
+    {
+      "url": "https://i.ytimg.com/vi/sf0QFJTvOLM/hqdefault.jpg?sqp=-oaymwEcCPYBEIoBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLDkyd4-cROVobFxNjveKu395nahXA",
+      "height": 138,
+      "width": 246
+    },
+    {
+      "url": "https://i.ytimg.com/vi/sf0QFJTvOLM/hqdefault.jpg?sqp=-oaymwEcCNACELwBSFXyq4qpAw4IARUAAIhCGAFwAcABBg==&rs=AOn4CLCFMxktsRvob-02-R8lVbCJ2CVWoA",
+      "height": 188,
+      "width": 336
+    }
+  ],
+  "timestamp": null,
+  "release_timestamp": null,
+  "availability": null,
+  "view_count": 3900000,
+  "live_status": null,
+  "channel_is_verified": null,
+  "__x_forwarded_for_ip": null,
+  "webpage_url": "https://www.youtube.com/watch?v=sf0QFJTvOLM",
+  "original_url": "https://www.youtube.com/watch?v=sf0QFJTvOLM",
+  "webpage_url_basename": "watch",
+  "webpage_url_domain": "youtube.com",
+  "extractor": "youtube",
+  "extractor_key": "Youtube",
+  "playlist_count": 41,
+  "playlist": "ヨルシカ",
+  "playlist_id": "PLUQKJP1sVuNMvxOYqmdyOkE8Ryd_AWbQT",
+  "playlist_title": "ヨルシカ",
+  "playlist_uploader": "ヨルシカ / n-buna Official",
+  "playlist_uploader_id": null,
+  "playlist_channel": "ヨルシカ / n-buna Official",
+  "playlist_channel_id": "UCRIgIJQWuBJ0Cv_VlU3USNA",
+  "playlist_webpage_url": "https://www.youtube.com/playlist?list=PLUQKJP1sVuNMvxOYqmdyOkE8Ryd_AWbQT&si=BIyMQF8Kv5yZXezd",
+  "n_entries": 41,
+  "playlist_index": 1,
+  "__last_playlist_index": 41,
+  "playlist_autonumber": 1,
+  "epoch": 1745045755,
+  "duration_string": "4:17",
+  "release_year": null,
+  "_version": {
+    "version": "2025.02.19",
+    "current_git_head": null,
+    "release_git_head": "4985a4041770eaa0016271809a1fd950dc809a55",
+    "repository": "yt-dlp/yt-dlp"
+  }
+}

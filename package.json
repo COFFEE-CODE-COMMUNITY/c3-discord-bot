@@ -6,7 +6,8 @@
     "test": "jest",
     "dev": "ts-node src/main.ts start",
     "build": "tsc",
-    "start": "node dist/src/main.js start"
+    "start": "node dist/src/main.js start",
+    "register-command": "ts-node src/main.ts register-command"
   },
   "keywords": [],
   "author": "",

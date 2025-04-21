@@ -1,10 +1,8 @@
 import MusicSource from "./MusicSource"
-import { AudioPlayer, AudioPlayerStatus, AudioResource, createAudioResource, StreamType } from "@discordjs/voice"
 import { PassThrough } from 'stream'
-import { performance } from 'perf_hooks'
-import DiscordReplyException from "../exceptions/DiscordReplyException"
 import { spawn } from "child_process"
 import MusicMetadata from "./MusicMetadata"
+import playdl from 'play-dl'
 
 class YouTubeMusicSource extends MusicSource {
 
@@ -23,7 +21,7 @@ class YouTubeMusicSource extends MusicSource {
       "--no-cache-dir",
       "--quiet",
       "--extract-audio",
-      "--cookies", "youtube-cookies.txt",
+      // "--cookies", "youtube-cookies.txt",
       this.url.toString()
     ], { stdio: ['ignore', 'pipe', 'ignore'] })
 
@@ -37,7 +35,7 @@ class YouTubeMusicSource extends MusicSource {
   }
 
   public getMusicMetadata(): MusicMetadata {
-    throw new Error("Method not implemented.")
+    throw new Error('Method not implemented.')
   }
 }
 

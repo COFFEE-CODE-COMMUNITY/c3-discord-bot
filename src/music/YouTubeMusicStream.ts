@@ -1,11 +1,10 @@
-import MusicSource from "./MusicSource"
+import MusicStreamProvider from "./MusicStreamProvider"
 import { PassThrough } from 'stream'
 import { spawn } from "child_process"
 import MusicMetadata from "./MusicMetadata"
 import playdl from 'play-dl'
 
-class YouTubeMusicSource extends MusicSource {
-
+class YouTubeMusicStream extends MusicStreamProvider {
   public constructor(private readonly url: URL) {
     super()
 
@@ -39,4 +38,4 @@ class YouTubeMusicSource extends MusicSource {
   }
 }
 
-export default YouTubeMusicSource
+export default YouTubeMusicStream

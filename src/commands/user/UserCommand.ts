@@ -1,6 +1,6 @@
 import DiscordSlashCommand from "../../abstracts/DiscordSlashCommand"
 import {SlashCommandBuilder} from "discord.js"
-import {} from "@prisma/client"
+import {Peminatan} from "@prisma/client"
 
 class UserCommand extends DiscordSlashCommand {
   public slashCommand = new SlashCommandBuilder()
@@ -21,8 +21,10 @@ class UserCommand extends DiscordSlashCommand {
             .setDescription("get users by peminatan")
             .setRequired(true)
             .addChoices(
-              {name: 'Frontend', value: 'Frontend'},
-              {name: 'Backend', value: 'Backend'}
+              Object.keys(Peminatan).map(peminatan => ({
+                name : peminatan,
+                value : peminatan
+              }))
             )
         )
       )

@@ -7,6 +7,7 @@ import container from "../infrastructures/container"
 import SpotifyService from "../services/SpotifyService"
 import playdl from 'play-dl'
 import YouTubeMusicSource from "./YouTubeMusicSource"
+import { PrismaClient, Peminatan } from '@prisma/client'
 
 class MusicPlayer extends VoicePlayer {
   private readonly musicQueue: MusicSource[] = []

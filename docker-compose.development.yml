@@ -1,0 +1,19 @@
+version: "3.8"
+
+name: cthree-discord-bot-development
+
+services:
+  database:
+    image: postgres:latest
+    container_name: bot_database
+    environment:
+      POSTGRES_USER: cthree-bot
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cthree-discord-bot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -17,6 +17,7 @@
     "@discordjs/opus": "^0.10.0",
     "@discordjs/voice": "^0.18.0",
     "@napi-rs/canvas": "^0.1.68",
+    "@prisma/client": "^6.6.0",
     "@spotify/web-api-ts-sdk": "^1.2.0",
     "commander": "^13.1.0",
     "convict": "^6.2.4",

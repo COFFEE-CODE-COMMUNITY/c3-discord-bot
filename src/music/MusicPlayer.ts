@@ -1,16 +1,15 @@
 import { AudioPlayerState, AudioPlayerStatus, createAudioResource, StreamType } from "@discordjs/voice"
-import MusicSource from "./MusicSource"
+import MusicStreamProvider from "./MusicStreamProvider"
 import VoicePlayer, { AudioPlayerNewState, VoicePlayerConfiguration } from "../voice/VoicePlayer"
 import DiscordReplyException from "../exceptions/DiscordReplyException"
 import { EmbedBuilder } from "discord.js"
 import container from "../infrastructures/container"
 import SpotifyService from "../services/SpotifyService"
 import playdl from 'play-dl'
-import YouTubeMusicSource from "./YouTubeMusicSource"
-import { PrismaClient, Peminatan } from '@prisma/client'
+import YouTubeMusicStream from "./YouTubeMusicStream"
 
 class MusicPlayer extends VoicePlayer {
-  private readonly musicQueue: MusicSource[] = []
+  private readonly musicQueue: MusicStreamProvider[] = []
   private readonly spotifyService: SpotifyService = container.get(SpotifyService)
 
   public constructor(configuration: VoicePlayerConfiguration) {
@@ -189,7 +188,7 @@ class MusicPlayer extends VoicePlayer {
       try {
         const info = await playdl.video_info(url.toString())
 
-        this.musicQueue.push(new YouTubeMusicSource(url))
+        this.musicQueue.push(new YouTubeMusicStream(url))
       } catch (error: any) {
         this.logger.warn(error.message)
 
@@ -207,7 +206,7 @@ class MusicPlayer extends VoicePlayer {
         for (const video of videos) {
           this.logger.debug(`Adding ${video.title} to queue`)
 
-          this.musicQueue.push(new YouTubeMusicSource(new URL(video.url)))
+          this.musicQueue.push(new YouTubeMusicStream(new URL(video.url)))
         }
 
         this.logger.info(`${videos.length} tracks added from YouTube playlist`)

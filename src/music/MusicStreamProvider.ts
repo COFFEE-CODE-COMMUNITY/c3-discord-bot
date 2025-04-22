@@ -3,7 +3,7 @@ import container from "../infrastructures/container"
 import { Readable } from "stream"
 import MusicMetadata from "./MusicMetadata"
 
-abstract class MusicSource {
+abstract class MusicStreamProvider {
   protected readonly logger: Logger = container.get(Logger)
 
   protected readonly musicMetadata!: MusicMetadata
@@ -12,4 +12,4 @@ abstract class MusicSource {
   public abstract getMusicMetadata(): MusicMetadata
 }
 
-export default MusicSource
+export default MusicStreamProvider

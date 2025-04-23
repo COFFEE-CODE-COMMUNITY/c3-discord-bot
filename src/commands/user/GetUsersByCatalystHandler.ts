@@ -5,8 +5,8 @@ import Database from "../../infrastructures/Database"
 import { injectable } from "inversify"
 
 @injectable()
-class GetUserByCatalystHandler extends CommandHandler {
-  public prefix: string[] = ['user', 'get', 'catalyst']
+class GetUsersByCatalystHandler extends CommandHandler {
+  public prefix: string[] = ['user', 'get', 'by-catalyst']
 
   public constructor(private db: Database) {
     super()
@@ -38,4 +38,4 @@ class GetUserByCatalystHandler extends CommandHandler {
   }
 }
 
-export default GetUserByCatalystHandler
+export default GetUsersByCatalystHandler

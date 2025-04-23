@@ -1,5 +1,4 @@
 import { ChatInputCommandInteraction } from "discord.js"
-import dayjs from "dayjs"
 import CommandHandler from "../../abstracts/CommandHandler"
 import Database from "../../infrastructures/Database"
 import { injectable } from "inversify"
@@ -27,9 +26,11 @@ class GetAllUsersHandler extends CommandHandler {
 
     const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
     const total = users.length
-    const date = dayjs().format("D MMMM YYYY")
 
-    const content = `**Semua User**\n${userList}\n\n${total} member pada ${date}`
+    const date = new Date()
+    const formattedDate = `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+
+    const content = `**Semua User**\n${userList}\n\n${total} member pada ${formattedDate}`
 
     await interaction.reply({ content })
   }

@@ -1,12 +1,11 @@
 import { ChatInputCommandInteraction } from "discord.js"
-import { Peminatan } from "@prisma/client"
 import CommandHandler from "../../abstracts/CommandHandler"
 import Database from "../../infrastructures/Database"
 import { injectable } from "inversify"
-import dayjs from "dayjs"
+import { Peminatan } from "@prisma/client"
 
 @injectable()
-class GetUserByPeminatan extends CommandHandler {
+class GetUserByPeminatanHandler extends CommandHandler {
   public prefix: string[] = ['user', 'get', 'by-peminatan']
 
   public constructor(private db: Database) {
@@ -22,21 +21,21 @@ class GetUserByPeminatan extends CommandHandler {
     })
 
     if (users.length === 0) {
-      await interaction.reply({
-        content: `Tidak ada user dengan peminatan ${value}`,
-        ephemeral: true
-      })
+      await interaction.reply({ content: `Tidak ada user dengan peminatan ${value}.`, ephemeral: true })
       return
     }
 
     const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
     const total = users.length
-    const date = dayjs().format("D MMMM YYYY")
 
-    const content = `**${value}**\n${userList}\n\n${total} member pada ${date}`
+    // Format current date to "D MMMM YYYY"
+    const date = new Date()
+    const formattedDate = `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+
+    const content = `**User dengan peminatan ${value}:**\n${userList}\n\n${total} member pada ${formattedDate}`
 
     await interaction.reply({ content })
   }
 }
 
-export default GetUserByPeminatan
+export default GetUserByPeminatanHandler

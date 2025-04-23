@@ -1,12 +1,11 @@
 import { ChatInputCommandInteraction } from "discord.js"
-import dayjs from "dayjs"
 import CommandHandler from "../../abstracts/CommandHandler"
 import Database from "../../infrastructures/Database"
 import { injectable } from "inversify"
 
 @injectable()
 class GetUserByCoreHandler extends CommandHandler {
-  public prefix: string[] = ['user', 'get', 'core']
+  public prefix: string[] = ['user', 'get', 'by-core']
 
   public constructor(private db: Database) {
     super()
@@ -20,7 +19,7 @@ class GetUserByCoreHandler extends CommandHandler {
 
     if (users.length === 0) {
       await interaction.reply({
-        content: "Tidak ada user Core member",
+        content: "Tidak ada user Core member.",
         ephemeral: true
       })
       return
@@ -28,9 +27,12 @@ class GetUserByCoreHandler extends CommandHandler {
 
     const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
     const total = users.length
-    const date = dayjs().format("D MMMM YYYY")
 
-    const content = `**Core**\n${userList}\n\n${total} member pada ${date}`
+    // Format current date to "D MMMM YYYY"
+    const date = new Date()
+    const formattedDate = `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+
+    const content = `**Core Member:**\n${userList}\n\n${total} member pada ${formattedDate}`
 
     await interaction.reply({ content })
   }

@@ -6,7 +6,7 @@ import { Readable } from "stream"
 
 @injectable()
 class YouTubeService {
-  private readonly musicMetadataCache: WeakMap<String, MusicMetadata> = new WeakMap()
+  private readonly musicMetadataCache: AutoCache<string, MusicMetadata> = new AutoCache()
 
   public constructor(private logger: Logger) {
     this.logger.setContextName(this.constructor.name)
@@ -58,13 +58,31 @@ class YouTubeService {
           this.musicMetadataCache.set(url, musicMetadata)
 
           resolve(musicMetadata)
-        } catch(error) {
+        } catch (error) {
           this.logger.error(`Failed to parse metadata: ${error}`, error as Error)
 
           return reject(error)
         }
       })
     })
+  }
+
+  public static getVideoIdFromUrl(url: string | URL): string | null {
+    if (typeof url === 'string') {
+      url = new URL(url)
+    }
+
+    switch (url.hostname) {
+      case 'www.youtube.com':
+      case 'youtube.com':
+      case 'music.youtube.com':
+        return url.searchParams.get('v') || null
+      case 'youtu.be':
+      case 'www.youtu.be':
+        return url.pathname.slice(1)
+      default:
+        return null
+    }
   }
 }
 

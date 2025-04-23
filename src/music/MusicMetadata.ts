@@ -3,7 +3,6 @@ interface MusicMetadata {
   artist: string
   image: URL
   duration: number
-  source: URL
 }
 
 export default MusicMetadata

@@ -1,7 +1,9 @@
 import DiscordSlashCommand from "../../abstracts/DiscordSlashCommand"
 import {SlashCommandBuilder} from "discord.js"
 import {Peminatan} from "@prisma/client"
+import { injectable } from "inversify"
 
+@injectable()
 class UserCommand extends DiscordSlashCommand {
   public slashCommand = new SlashCommandBuilder()
     .setName("user")
@@ -38,3 +40,5 @@ class UserCommand extends DiscordSlashCommand {
       )
     ) as SlashCommandBuilder
 }
+
+export default UserCommand

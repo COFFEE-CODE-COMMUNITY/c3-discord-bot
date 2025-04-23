@@ -27,6 +27,7 @@ class GetAllUsersHandler extends CommandHandler {
     const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
     const total = users.length
 
+    // Format current date to "D MMMM YYYY"
     const date = new Date()
     const formattedDate = `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
 

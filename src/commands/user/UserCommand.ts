@@ -22,8 +22,8 @@ class UserCommand extends DiscordSlashCommand {
             .setRequired(true)
             .addChoices(
               Object.keys(Peminatan).map(peminatan => ({
-                name : peminatan,
-                value : peminatan
+                name: peminatan,
+                value: peminatan
               }))
             )
         )

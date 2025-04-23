@@ -1,5 +1,5 @@
 // import {ChatInputCommandInteraction} from "discord.js"
-// import prisma from "prisma"
+// import prisma from "./Prisma";
 //
 // export async function getAllHandler(interaction: ChatInputCommandInteraction) {
 //   const users = await prisma.user.findMany()

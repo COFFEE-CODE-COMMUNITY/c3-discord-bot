@@ -45,7 +45,7 @@ class GetUserByCatalystHandler extends CommandHandler {
 
     const guildName = interaction.guild?.name ?? "server ini"
 
-    const content = `**List member Catalyst di ${guildName} :**\n${userList}\n\n${total} orang total dari member Catalyst pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
+    const content = `**List member Catalyst di ${guildName} :**\n ${userList}\n\n${total} orang total dari member Catalyst pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }

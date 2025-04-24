@@ -44,7 +44,7 @@ class GetAllUsersHandler extends CommandHandler {
 
     const guildName = interaction.guild?.name ?? "server ini"
 
-    const content = `**List semua member di ${guildName} :**\n${userList}\n\n${total} orang total dari semua member pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
+    const content = `**List semua member di ${guildName} :**\n  ${userList}\n\n${total} orang total dari semua member pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }

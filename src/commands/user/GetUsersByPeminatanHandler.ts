@@ -27,7 +27,7 @@ class GetUserByPeminatanHandler extends CommandHandler {
     }
 
     const userList = users
-      .map((user, i) => ` ${i + 1}. ${user.fullName.trim()}`)
+      .map((user, i) => `${i + 1}. ${user.fullName.trim()}`)
       .join("\n")
     const total = users.length
 
@@ -45,7 +45,7 @@ class GetUserByPeminatanHandler extends CommandHandler {
     if (offset === 8) timeZoneLabel = "WITA"
     else if (offset === 9) timeZoneLabel = "WIT"
 
-    const content = `**List member ${value} di ${guildName} :**\n${userList}\n\n${total} orang total dari member ${value} pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
+    const content = `**List member ${value} di ${guildName} :**\n ${userList}\n\n${total} orang total dari member ${value} pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }

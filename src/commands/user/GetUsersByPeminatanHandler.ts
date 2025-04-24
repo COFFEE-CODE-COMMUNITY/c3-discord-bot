@@ -2,40 +2,51 @@ import { ChatInputCommandInteraction } from "discord.js"
 import CommandHandler from "../../abstracts/CommandHandler"
 import Database from "../../infrastructures/Database"
 import { injectable } from "inversify"
-import { Peminatan } from "@prisma/client"
 
 @injectable()
-class GetUserByPeminatanHandler extends CommandHandler {
-  public prefix: string[] = ['user', 'get', 'by-peminatan']
+class GetUserByCoreHandler extends CommandHandler {
+  public prefix: string[] = ['user', 'get', 'by-core']
 
   public constructor(private db: Database) {
     super()
   }
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
-    const value = interaction.options.getString("by-peminatan") as Peminatan
-
     const users = await this.db.user.findMany({
-      where: { peminatan: value },
+      where: { coreMember: true },
       orderBy: { fullName: "asc" }
     })
 
     if (users.length === 0) {
-      await interaction.reply({ content: `Tidak ada user dengan peminatan ${value}.`, ephemeral: true })
+      await interaction.reply({
+        content: "Tidak ada user Core member.",
+        ephemeral: true
+      })
       return
     }
 
-    const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
+    const userList = users.map((user, i) => `  ${i + 1}. ${user.fullName}`).join("\n")
     const total = users.length
 
-    // Format current date to "D MMMM YYYY"
-    const date = new Date()
-    const formattedDate = `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+    const now = new Date()
+    const formattedDate = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`
+    const formattedTime = now.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })
 
-    const content = `**User dengan peminatan ${value}:**\n${userList}\n\n${total} member pada ${formattedDate}`
+    const offset = now.getTimezoneOffset() / -60
+    let timeZoneLabel = "WIB"
+    if (offset === 8) timeZoneLabel = "WITA"
+    else if (offset === 9) timeZoneLabel = "WIT"
+
+    const guildName = interaction.guild?.name ?? "server ini"
+
+    const content = `**List member Core di ${guildName} :**\n${userList}\n\n${total} orang total dari member Core pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }
 }
 
-export default GetUserByPeminatanHandler
+export default GetUserByCoreHandler

@@ -27,11 +27,22 @@ class GetAllUsersHandler extends CommandHandler {
     const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
     const total = users.length
 
-    // Format current date to "D MMMM YYYY"
     const date = new Date()
-    const formattedDate = `${date.getDate()} ${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`
+    const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`
+    const formattedTime = date.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })
 
-    const content = `**Semua User**\n${userList}\n\n${total} member pada ${formattedDate}`
+    const offset = date.getTimezoneOffset() / -60
+    let timeZoneLabel = "WIB"
+    if (offset === 8) timeZoneLabel = "WITA"
+    else if (offset === 9) timeZoneLabel = "WIT"
+
+    const guildName = interaction.guild?.name ?? "server ini"
+
+    const content = `**List semua member di ${guildName} :**\n${userList}\n\n${total} orang total dari semua member pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }

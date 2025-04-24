@@ -1,8 +1,8 @@
-import { ChatInputCommandInteraction } from "discord.js"
+import {ChatInputCommandInteraction} from "discord.js"
 import CommandHandler from "../../abstracts/CommandHandler"
 import Database from "../../infrastructures/Database"
-import { injectable } from "inversify"
-import { Peminatan } from "@prisma/client"
+import {injectable} from "inversify"
+import {Peminatan} from "@prisma/client"
 
 @injectable()
 class GetUserByPeminatanHandler extends CommandHandler {
@@ -14,15 +14,14 @@ class GetUserByPeminatanHandler extends CommandHandler {
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const value = interaction.options.getString("by-peminatan") as Peminatan
-    const guildName = interaction.guild?.name ?? "server ini"
 
     const users = await this.db.user.findMany({
-      where: { peminatan: value },
-      orderBy: { fullName: "asc" }
+      where: {peminatan: value},
+      orderBy: {fullName: "asc"}
     })
 
     if (users.length === 0) {
-      await interaction.reply({ content: `Tidak ada user dengan peminatan ${value}.`, ephemeral: true })
+      await interaction.reply({content: `No user with peminatan ${value}.`, ephemeral: true})
       return
     }
 
@@ -30,23 +29,11 @@ class GetUserByPeminatanHandler extends CommandHandler {
       .map(user => `\u00A0\u00A0• \u00A0${user.fullName.trim()}`)
       .join("\n")
     const total = users.length
+    const guildName = interaction.guild?.name ?? "this server"
 
-    const now = new Date()
-    const formattedTime = now.toLocaleTimeString('id-ID', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    })
+    const content = `${value} members list in ${guildName} :\n${userList}\n\nTotal members : ${total} people in C3 ${value}.`
 
-    // Mapping timezone offset to WIB/WITA/WIT
-    const offset = now.getTimezoneOffset() / -60 // negatif karena UTC
-    let timeZoneLabel = "WIB"
-    if (offset === 8) timeZoneLabel = "WITA"
-    else if (offset === 9) timeZoneLabel = "WIT"
-
-    const content = `List member ${value} di ${guildName} :\n${userList}\n\nJumlah ${total} orang total dari member ${value}. • ${formattedTime} ${timeZoneLabel}`
-
-    await interaction.reply({ content })
+    await interaction.reply({content})
   }
 }
 

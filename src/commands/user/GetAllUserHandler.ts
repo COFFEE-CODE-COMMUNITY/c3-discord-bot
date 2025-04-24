@@ -1,7 +1,7 @@
-import { ChatInputCommandInteraction } from "discord.js"
+import {ChatInputCommandInteraction} from "discord.js"
 import CommandHandler from "../../abstracts/CommandHandler"
 import Database from "../../infrastructures/Database"
-import { injectable } from "inversify"
+import {injectable} from "inversify"
 
 @injectable()
 class GetAllUsersHandler extends CommandHandler {
@@ -13,12 +13,12 @@ class GetAllUsersHandler extends CommandHandler {
 
   public async handle(interaction: ChatInputCommandInteraction): Promise<void> {
     const users = await this.db.user.findMany({
-      orderBy: { fullName: "asc" }
+      orderBy: {fullName: "asc"}
     })
 
     if (users.length === 0) {
       await interaction.reply({
-        content: "Tidak ada user yang terdaftar.",
+        content: "No user found.",
         ephemeral: true
       })
       return
@@ -28,24 +28,11 @@ class GetAllUsersHandler extends CommandHandler {
       .map(user => `\u00A0\u00A0• \u00A0${user.fullName.trim()}`)
       .join("\n")
     const total = users.length
+    const guildName = interaction.guild?.name ?? "this server"
 
-    const date = new Date()
-    const formattedTime = date.toLocaleTimeString('id-ID', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    })
+    const content = `List all members in ${guildName} :\n${userList}\n\nTotal members : ${total} people in ${guildName}.`
 
-    const offset = date.getTimezoneOffset() / -60
-    let timeZoneLabel = "WIB"
-    if (offset === 8) timeZoneLabel = "WITA"
-    else if (offset === 9) timeZoneLabel = "WIT"
-
-    const guildName = interaction.guild?.name ?? "server ini"
-
-    const content = `List semua member di ${guildName} :\n${userList}\n\nJumlah ${total} orang total dari semua member. • ${formattedTime} ${timeZoneLabel}`
-
-    await interaction.reply({ content })
+    await interaction.reply({content})
   }
 }
 

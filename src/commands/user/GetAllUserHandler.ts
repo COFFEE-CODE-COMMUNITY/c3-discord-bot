@@ -25,7 +25,7 @@ class GetAllUsersHandler extends CommandHandler {
     }
 
     const userList = users
-      .map((user, i) => ` ${i + 1}. ${user.fullName.trim()}`)
+      .map((user, i) => `${i + 1}. ${user.fullName.trim()}`)
       .join("\n")
     const total = users.length
 
@@ -44,7 +44,7 @@ class GetAllUsersHandler extends CommandHandler {
 
     const guildName = interaction.guild?.name ?? "server ini"
 
-    const content = `**List semua member di ${guildName} :**\n  ${userList}\n\n${total} orang total dari semua member pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
+    const content = `**List semua member di ${guildName} :**\n${userList}\n\n${total} orang total dari semua member pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }

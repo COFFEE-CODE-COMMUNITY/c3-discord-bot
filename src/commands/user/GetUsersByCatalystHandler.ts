@@ -26,12 +26,11 @@ class GetUserByCatalystHandler extends CommandHandler {
     }
 
     const userList = users
-      .map((user, i) => `${i + 1}. ${user.fullName.trim()}`)
+      .map(user => `\u00A0\u00A0• \u00A0${user.fullName.trim()}`)
       .join("\n")
     const total = users.length
 
     const now = new Date()
-    const formattedDate = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`
     const formattedTime = now.toLocaleTimeString('id-ID', {
       hour: '2-digit',
       minute: '2-digit',
@@ -45,7 +44,7 @@ class GetUserByCatalystHandler extends CommandHandler {
 
     const guildName = interaction.guild?.name ?? "server ini"
 
-    const content = `**List member Catalyst di ${guildName} :**\n${userList}\n\n${total} orang total dari member Catalyst pada: • ${formattedDate} at ${formattedTime} ${timeZoneLabel}`
+    const content = `List member Catalyst di ${guildName} :\n${userList}\n\nJumlah ${total} orang total dari member Catalyst. • ${formattedTime} ${timeZoneLabel}`
 
     await interaction.reply({ content })
   }

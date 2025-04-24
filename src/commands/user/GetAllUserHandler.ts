@@ -24,7 +24,9 @@ class GetAllUsersHandler extends CommandHandler {
       return
     }
 
-    const userList = users.map((user, i) => `${i + 1}. ${user.fullName}`).join("\n")
+    const userList = users
+      .map((user, i) => `${i + 1}. ${user.fullName.trim()}`)
+      .join("\n")
     const total = users.length
 
     const date = new Date()

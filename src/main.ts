@@ -74,12 +74,6 @@ class Main {
   }
 
   public static async main(): Promise<void> {
-    await play.setToken({
-      youtube: {
-        cookie: await this.getYoutubeCookie()
-      }
-    })
-
     await this.scanInjectableClasses(path.resolve(config.get('env') == 'production' ? 'dist/src' : 'src'))
 
     container.bind(Container).toConstantValue(container)

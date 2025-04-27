@@ -13,7 +13,7 @@ import { REST, Routes } from "discord.js"
 import config from "./infrastructures/config"
 import CommandHandler from "./abstracts/CommandHandler"
 import container from "./infrastructures/container"
-import play from 'play-dl'
+import ModalHandler from "./abstracts/ModalHandler"
 
 @injectable()
 class Main {
@@ -100,25 +100,14 @@ class Main {
             container.bind(DiscordSlashCommand).to(module.default).inSingletonScope()
           } else if(CommandHandler.isPrototypeOf(module.default)) {
             container.bind(CommandHandler).to(module.default).inSingletonScope()
+          } else if(ModalHandler.isPrototypeOf(module.default)) {
+            container.bind(ModalHandler).to(module.default).inSingletonScope()
           } else {
             container.bind(module.default).toSelf()
           }
         }
       }
     }
-  }
-
-  private static async getYoutubeCookie() {
-    const raw = await fs.readFile(path.resolve('youtube-cookies.txt'), 'utf-8');
-    const lines = raw
-      .split('\n')
-      .filter(line => line && !line.startsWith('#')) // skip comments
-      .map(line => {
-        const parts = line.split('\t');
-        return `${parts[5]}=${parts[6]}`;
-      });
-
-    return lines.join('; ');
   }
 }
 Main.main()

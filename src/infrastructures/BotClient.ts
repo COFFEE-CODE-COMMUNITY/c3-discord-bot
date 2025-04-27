@@ -3,6 +3,7 @@ import { Client, Events, GatewayIntentBits } from "discord.js"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
 import Logger from "./Logger"
 import CommandHandler from "../abstracts/CommandHandler"
+import ModalHandler from "../abstracts/ModalHandler"
 
 @injectable()
 class BotClient {
@@ -29,6 +30,7 @@ class BotClient {
 
     await this.mapEventHandlers()
     await this.mapChatCommandHandlers()
+    await this.mapModalHandlers()
     await this.client.login(token)
   }
 
@@ -90,6 +92,43 @@ class BotClient {
 
         this.logger.debug(`Executing command handler for "${prefix}" prefix`)
 
+        await handler.handle(interaction)
+      } catch(error) {
+        this.logger.error((error as Error).message)
+        console.error(error)
+        await interaction.reply({ content: 'An error occurred while executing the command', ephemeral: true })
+
+        return
+      }
+    })
+  }
+
+  private async mapModalHandlers(): Promise<void> {
+    this.logger.verbose('Mapping modal handlers')
+
+    const modalHandlerInstances = await this.container.getAllAsync(ModalHandler)
+    const handlerMap = new Map<string, ModalHandler>()
+
+    for (const instance of modalHandlerInstances) {
+      handlerMap.set(instance.modalId, instance)
+      this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.modalId}" modal ID`)
+    }
+
+    this.client.on(Events.InteractionCreate, async interaction => {
+      if(!interaction.isModalSubmit()) return
+
+      const handler = handlerMap.get(interaction.customId)
+
+      if (!handler) {
+        this.logger.warn(`No handler found for "${interaction.customId}" modal ID`)
+
+        // await interaction.reply({ content: 'No command found', ephemeral: true })
+        return
+      }
+
+      this.logger.debug(`Executing modal handler for "${interaction.customId}" modal ID`)
+
+      try {
         await handler.handle(interaction)
       } catch(error) {
         this.logger.error((error as Error).message)

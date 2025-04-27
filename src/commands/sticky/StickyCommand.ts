@@ -10,11 +10,6 @@ class StickyCommand extends DiscordSlashCommand {
     .addSubcommand(subcommand => subcommand
       .setName('enable')
       .setDescription('Enable the sticky message')
-      .addStringOption(option => option
-        .setName('message')
-        .setDescription('The message of sticky')
-        .setRequired(true)
-      )
       .addChannelOption(option => option
         .setName('channel')
         .setDescription('Specify the channel for enable sticky message.')

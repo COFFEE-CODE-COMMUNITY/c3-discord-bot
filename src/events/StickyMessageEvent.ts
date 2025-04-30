@@ -33,7 +33,7 @@ class StickyMessageEvent extends DiscordEventListener<Events.MessageCreate> {
       where: { channelId: interaction.channelId },
       data: {
         messageId,
-      },
+      }
     })
   }
 }

@@ -2,7 +2,6 @@ import { Message, OmitPartialGroupDMChannel } from "discord.js"
 import { DeepMockProxy, mockDeep } from "jest-mock-extended"
 import StickyMessageEvent from "../../src/events/StickyMessageEvent"
 import Database from "../../src/infrastructures/Database"
-import { StickyMessage } from "@prisma/client"
 
 describe('StickyMessageEvent', () => {
   let stickyMessageEvent: StickyMessageEvent

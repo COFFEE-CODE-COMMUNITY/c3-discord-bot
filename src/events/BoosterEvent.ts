@@ -21,8 +21,8 @@ class BoosterEvent extends DiscordEventListener<Events.MessageCreate> {
   public async execute(message: OmitPartialGroupDMChannel<Message>): Promise<void> {
     const idChannel = "1347976322328170507"
 
-    //[] for check message type
-    if (message.channelId === idChannel && message.member && [8, 9, 10, 11].includes(message.type)) {
+    //check message
+    if (message.channelId === idChannel && message.member && message.content.includes("boost")) {
       const user = message.member.user
       const realName = user.username
       const guild = message.guild

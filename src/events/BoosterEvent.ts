@@ -2,9 +2,10 @@ import {
   EmbedBuilder,
   AttachmentBuilder,
   MessageType,
+  TextChannel,
   Message,
   Events,
-  OmitPartialGroupDMChannel
+  OmitPartialGroupDMChannel,
 } from "discord.js"
 import DiscordEventListener from "../abstracts/DiscordEventListener";
 import {join} from "path"
@@ -19,16 +20,19 @@ class BoosterEvent extends DiscordEventListener<Events.MessageCreate> {
   }
 
   public async execute(message: OmitPartialGroupDMChannel<Message>): Promise<void> {
-    const idChannelBooster = "1348339821503844493"
-    if (message.channelId === idChannelBooster && message.member && !message.author.bot) {
+    const idChannel = "1347976322328170507"
+
+    if (message.channelId === idChannel && message.member && message.content.includes("just boosted the server")) {
       const user = message.member.user
       const realName = user.username
       const guild = message.guild
+      const customRole = "1342397104592781333"
       const serverName = `<@${message.member.id}>`
       const attachment = new AttachmentBuilder(join("resources", "images", "server-boost.gif"), { name: "server-boost.gif" })
 
+      //check if message only appear in server
       if (guild) {
-        const boostLevel = ['None', 'Level 1', 'Level 2', 'Level 3'][guild.premiumTier]
+        const boostLevel = ['0', '1', '2', '3'][guild.premiumTier]
         const totalBoost = guild.premiumSubscriptionCount
         const avatarUrl = user.displayAvatarURL({
           dynamic: true,
@@ -51,15 +55,27 @@ class BoosterEvent extends DiscordEventListener<Events.MessageCreate> {
           .setDescription(
             `Hi, ${serverName}! Thanks for the boost 💎.\n` +
             `Because of you, we are now has ${totalBoost} in total.\n` +
-            `Please DM our discord mod for custom role.`
+            `Please DM our discord mod for <@&${customRole}>.`
           )
           .setThumbnail(`${avatarUrl}`)
-          .setFooter({text: `Currently server level ${boostLevel}. • ${time}`})
+          .setFooter({text: `Currently server level ${boostLevel}. • ${time}`
+          })
 
-        await message.channel.send({
-          embeds: [embed],
-          files: [attachment]
-        })
+        //Get channel object for type TextChannel
+        const targetChannel = await message.client.channels.fetch(idChannel)
+
+        //Deleting previous message
+        await message.delete().catch(console.error)
+
+        //Sending message
+        if (targetChannel instanceof TextChannel) {
+          await targetChannel.send({
+            embeds: [embed],
+            files: [attachment]
+          })
+        } else {
+          console.error('The fetched channel is not Text Channel!')
+        }
       }
     } else {
       return

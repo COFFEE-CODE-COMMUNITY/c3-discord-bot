@@ -30,7 +30,7 @@ model StickyMessage {
   message   String   @db.Text
   messageId String   @unique
   channelId String   @unique
-  guildId   String   @unique
+  guildId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

@@ -1,6 +1,6 @@
 import ModalId from "../../enums/ModalId"
 import ModalHandler from "../../abstracts/ModalHandler"
-import { ModalSubmitInteraction } from "discord.js"
+import { ChannelType, ModalSubmitInteraction } from "discord.js"
 import EnableStickyContext from "../../sticky/EnableStickyContext"
 import { injectable } from "inversify"
 import Database from "../../infrastructures/Database"
@@ -28,7 +28,15 @@ class CreateStickyMessageHandler extends ModalHandler {
     // Acknowledge the modal submission
     await interaction.reply({ content: "Sticky message created!", flags: "Ephemeral" })
 
-    const { id: messageId } = await interaction.followUp({ content: message })
+    const targetChannel = await interaction.client.channels.fetch(channelId)
+
+    if (targetChannel?.type != ChannelType.GuildText) {
+      await interaction.reply({ content: "Channel type is not guild text." })
+
+      return
+    }
+
+    const { id: messageId } = await targetChannel.send(message)
 
     // Save the sticky message to the database
     await this.db.stickyMessage.create({
@@ -39,6 +47,9 @@ class CreateStickyMessageHandler extends ModalHandler {
         messageId
       }
     })
+
+    // Delete channelId context
+    this.context.delete(userId)
   }
 }
 

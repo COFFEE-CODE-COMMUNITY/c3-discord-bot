@@ -58,7 +58,7 @@ class BoosterEvent extends DiscordEventListener<Events.MessageCreate> {
             `Please DM our discord mod for <@&${customRole}>.`
           )
           .setThumbnail(`${avatarUrl}`)
-          .setFooter({text: `Currently server level ${boostLevel}. • ${time}`
+          .setFooter({text: `Server level ${boostLevel}. • ${time}`
           })
 
         //Get channel object for type TextChannel

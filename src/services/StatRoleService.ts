@@ -38,6 +38,7 @@ class StatRoleService {
   }
 
   private async updateAll(guild: Guild): Promise<void> {
+    // Loop sebanyak n role
     for (const map of this.mappings) {
       try {
         const count = guild.members.cache.filter((m) =>

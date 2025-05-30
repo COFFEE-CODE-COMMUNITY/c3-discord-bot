@@ -57,7 +57,7 @@ class BoosterEvent extends DiscordEventListener<Events.MessageCreate> {
           .setDescription(
             `Hi, ${serverName}! Thanks for the boost 💎.\n` +
             `Because of you, we are now has ${totalBoost} in total.\n` +
-            `Please DM our discord mod for <@&${customRole}>.`
+            `Congrats! you've got role <@&${customRole}>.`
           )
           .setThumbnail(`${avatarUrl}`)
           .setFooter({text: `Server level ${boostLevel}. • ${time}`

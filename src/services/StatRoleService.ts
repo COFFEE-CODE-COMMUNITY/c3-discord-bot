@@ -11,7 +11,7 @@ type RoleStatMap = {
 
 @injectable()
 class StatRoleService {
-  private readonly intervalMs = 5 * 60 * 1000 // 5 menit
+  private readonly intervalMs = 1440 * 60 * 1000 // 1 hari
   private previousCounts: Record<string, number> = {}
 
   private readonly mappings: RoleStatMap[] = [

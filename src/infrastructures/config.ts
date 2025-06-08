@@ -34,6 +34,24 @@ const config = convict({
           default: '',
           env: 'C3_CHANNEL_GATE_ID'
         }
+      },
+      feedback: {
+        id: {
+          doc: 'Channel ID for feedback.',
+          format: String,
+          default: '',
+          env: 'C3_CHANNEL_FEEDBACK_ID'
+        }
+      },
+      log: {
+        feedback: {
+          id: {
+            doc: 'Channel ID for feedback logs.',
+            format: String,
+            default: '',
+            env: 'C3_CHANNEL_LOG_FEEDBACK_ID'
+          }
+        }
       }
     },
     guild: {

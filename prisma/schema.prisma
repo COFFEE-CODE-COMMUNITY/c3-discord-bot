@@ -43,6 +43,15 @@ model AutoDeleteMessage {
   updatedAt DateTime @default(now()) @updatedAt
 }
 
+model Feedback {
+  id        String   @id @default(uuid())
+  guildId   String
+  title     String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 enum Peminatan {
   Frontend
   Backend

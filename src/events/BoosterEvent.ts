@@ -40,27 +40,20 @@ class BoosterEvent extends DiscordEventListener<Events.MessageCreate> {
           dynamic: true,
           size: 1024
         } as any)
-        const now = new Date()
-        const time = now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-          timeZone: "Asia/Jakarta"
-        })
 
         const embed = new EmbedBuilder()
           .setColor(0xEB459E) // Warna pink seperti ikon boost
           .setAuthor({
-            name: `${realName} just boosted the server!`,
+            name: `${realName} telah booster server ini!`,
             iconURL: "attachment://server-boost.gif"
           })
           .setDescription(
-            `Hi, ${serverName}! Thanks for the boost 💎.\n` +
-            `Because of you, we are now has ${totalBoost} in total.\n` +
-            `Congrats! you've got role <@&${customRole}>.`
+            `Hi, ${serverName}! Terimakasih untuk booster-nya💎.\n` +
+            `Karena-mu, kita punya ${totalBoost} total boost.\n` +
+            `Selamat! kamu juga dapat role <@&${customRole}>.`
           )
           .setThumbnail(`${avatarUrl}`)
-          .setFooter({text: `Server level ${boostLevel}. • ${time}`
+          .setFooter({text: `Level server saat ini : ${boostLevel}.`
           })
 
         //Get channel object for type TextChannel

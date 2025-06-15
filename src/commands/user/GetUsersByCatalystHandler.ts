@@ -19,7 +19,7 @@ class GetUserByCatalystHandler extends CommandHandler {
 
     if (users.length === 0) {
       await interaction.reply({
-        content: "No user Catalyst member found.",
+        content: "Tidak dapat menemukan Catalyst member.",
         ephemeral: true
       })
       return
@@ -29,9 +29,9 @@ class GetUserByCatalystHandler extends CommandHandler {
       .map(user => `\u00A0\u00A0• \u00A0${user.fullName.trim()}`)
       .join("\n")
     const total = users.length
-    const guildName = interaction.guild?.name ?? "this server"
+    const guildName = interaction.guild?.name ?? "server ini"
 
-    const content = `Catalyst members list in ${guildName} :\n${userList}\n\nTotal members : ${total} people in C3 Catalyst.`
+    const content = `Daftar member catalyst di ${guildName} :\n${userList}\n\nTotal member : ${total} orang di C3 Catalyst.`
 
     await interaction.reply({content})
   }

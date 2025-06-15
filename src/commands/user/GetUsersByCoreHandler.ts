@@ -19,7 +19,7 @@ class GetUserByCoreHandler extends CommandHandler {
 
     if (users.length === 0) {
       await interaction.reply({
-        content: "No user Core member found.",
+        content: "Tidak dapat menemukan Core member.",
         ephemeral: true
       })
       return

@@ -18,7 +18,7 @@ class GetAllUsersHandler extends CommandHandler {
 
     if (users.length === 0) {
       await interaction.reply({
-        content: "No user found.",
+        content: "Tidak dapat menemukan member.",
         ephemeral: true
       })
       return
@@ -30,7 +30,7 @@ class GetAllUsersHandler extends CommandHandler {
     const total = users.length
     const guildName = interaction.guild?.name ?? "this server"
 
-    const content = `List all members in ${guildName} :\n${userList}\n\nTotal members : ${total} people in ${guildName}.`
+    const content = `Daftar semua member di ${guildName} :\n${userList}\n\nTotal member : ${total} orang di ${guildName}.`
 
     await interaction.reply({content})
   }

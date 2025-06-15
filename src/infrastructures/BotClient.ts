@@ -21,6 +21,7 @@ class BotClient {
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildInvites,
       ]
     })
   }

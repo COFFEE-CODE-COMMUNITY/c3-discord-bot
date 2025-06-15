@@ -1,4 +1,4 @@
-import {Collection, Events, Invite} from "discord.js"
+import { Collection, Events, Invite } from "discord.js"
 import { injectable } from "inversify"
 import DiscordEventListener from "../abstracts/DiscordEventListener"
 import { inviteCaches } from "./ClientReadyEvent"
@@ -16,6 +16,8 @@ class InviteCreateEvent extends DiscordEventListener<Events.InviteCreate> {
   }
 
   public async execute(invite: Invite): Promise<void> {
+    this.logger.debug(`[InviteCreate] Fired`)
+    this.logger.debug(`[InviteCreateEvent] Event triggered for invite: ${invite.code}`)
     const guild = invite.guild
     if (!guild) {
       this.logger.warn("[InviteCreateEvent] Invite has no associated guild.")

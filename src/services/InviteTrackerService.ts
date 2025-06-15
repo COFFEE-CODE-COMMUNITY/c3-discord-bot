@@ -27,22 +27,30 @@ class InviteTrackerService {
     let newVanityUses = oldVanityUses
 
     try {
-      // 1. Fetch new invites & vanity
-      [newInvites] = await Promise.all([
-        guild.invites.fetch()
-      ])
-
+      // 1. Fetch invites + vanity
+      [newInvites] = await Promise.all([guild.invites.fetch()])
       const vanity = await guild.fetchVanityData().catch(() => null)
       newVanityUses = vanity?.uses ?? 0
 
-      // 2. Cek vanity dulu
+      // 2. Cek vanity
       if (newVanityUses > oldVanityUses) {
         isVanity = true
       }
 
-      // 3. Cek invite jika bukan vanity
+      // 3. Jika bukan vanity, REFRESH invites lagi langsung sebelum cek
       if (!isVanity) {
-        for (const [code, invite] of newInvites) {
+        const refreshedInvites = await guild.invites.fetch()
+
+        this.logger.debug("===== INVITE USAGE DEBUG START =====")
+        for (const [code, invite] of refreshedInvites) {
+          const prevUses = oldInvites.get(code)?.uses ?? 0
+          const currentUses = invite.uses ?? 0
+          const inviter = invite.inviter?.tag ?? "null"
+          this.logger.debug(`Invite ${code} | Before: ${prevUses} → After: ${currentUses} | By: ${inviter}`)
+        }
+        this.logger.debug("===== INVITE USAGE DEBUG END =====")
+
+        for (const [code, invite] of refreshedInvites) {
           const prevUses = oldInvites.get(code)?.uses ?? 0
           const newUses = invite.uses ?? 0
           if (newUses > prevUses) {
@@ -50,6 +58,13 @@ class InviteTrackerService {
             break
           }
         }
+
+        if (!usedInvite) {
+          this.logger.warn(`[InviteTracker] No invite usage increase found for ${member.user.tag}`)
+        }
+
+        // gunakan refreshed untuk update cache
+        newInvites = refreshedInvites
       }
     } catch (error) {
       this.logger.warn(`[InviteTracker] Failed to fetch invites or vanity data: ${error}`)
@@ -72,24 +87,24 @@ class InviteTrackerService {
 
     if (isVanity) {
       embed.setDescription(
-        `➣ Welcome      : ${member.user.toString()}\n` +
-        `➣ Invite By    : vanity URL\n` +
-        `➣ Total Member : ${guild.memberCount}`
+        `➣ Selamat Datang   : ${member.user.toString()}\n` +
+        `➣ Status undangan  : vanity URL\n` +
+        `➣ Total anggota    : ${guild.memberCount}`
       ).setColor(0x1C567A)
     } else if (usedInvite && inviter) {
       embed.setDescription(
-        `➣ Welcome      : ${member.user.toString()}\n` +
-        `➣ Invite By    : <@${inviter.id}>\n` +
-        `➣ Total Invite : ${usedInvite.uses ?? "?"}\n` +
-        `➣ Total Member : ${guild.memberCount}`
+        `➣ Selamat Datang   : ${member.user.toString()}\n` +
+        `➣ Status undangan  : <@${inviter.id}>\n` +
+        `➣ Total undangan   : ${usedInvite.uses ?? "?"}\n` +
+        `➣ Total anggota    : ${guild.memberCount}`
       ).setColor(0x1C567A)
     } else {
       embed.setDescription(
-        `I cannot figure out who invited ${member.user.username}..\n\n` +
-        `Maybe cause:\n` +
-        `• Invited by : unknown\n` +
-        `• Invite was deleted or expired\n\n` +
-        `Total Member: ${guild.memberCount}`
+        `Saya tidak tahu siapa mengundang ${member.user.username}..\n\n` +
+        `Dikarenakan:\n` +
+        `• Status undangan : tidak diketahui\n` +
+        `• Undangan telah dihapus atau kadaluarsa\n\n` +
+        `Total anggota: ${guild.memberCount}`
       ).setColor(0x1C567A)
     }
 

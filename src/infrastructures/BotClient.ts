@@ -4,6 +4,7 @@ import DiscordEventListener from "../abstracts/DiscordEventListener"
 import Logger from "./Logger"
 import CommandHandler from "../abstracts/CommandHandler"
 import ModalHandler from "../abstracts/ModalHandler"
+import ButtonHandler from "../abstracts/ButtonHandler"
 
 @injectable()
 class BotClient {
@@ -31,6 +32,7 @@ class BotClient {
     await this.mapEventHandlers()
     await this.mapChatCommandHandlers()
     await this.mapModalHandlers()
+    await this.mapButtonHandlers()
     await this.client.login(token)
   }
 
@@ -127,6 +129,43 @@ class BotClient {
       }
 
       this.logger.debug(`Executing modal handler for "${interaction.customId}" modal ID`)
+
+      try {
+        await handler.handle(interaction)
+      } catch(error) {
+        this.logger.error((error as Error).message)
+        console.error(error)
+        await interaction.reply({ content: 'An error occurred while executing the command', ephemeral: true })
+
+        return
+      }
+    })
+  }
+
+  private async mapButtonHandlers(): Promise<void> {
+    this.logger.verbose('Mapping button handlers')
+
+    const buttonHandlerInstances = await this.container.getAllAsync(ButtonHandler)
+    const handlerMap = new Map<string, ButtonHandler>()
+
+    for (const instance of buttonHandlerInstances) {
+      handlerMap.set(instance.buttonId, instance)
+      this.logger.debug(`Mapped ${instance.constructor.name} with "${instance.buttonId}" button ID`)
+    }
+
+    this.client.on(Events.InteractionCreate, async interaction => {
+      if(!interaction.isButton()) return
+
+      const handler = handlerMap.get(interaction.customId)
+
+      if (!handler) {
+        this.logger.warn(`No handler found for "${interaction.customId}" button ID`)
+
+        // await interaction.reply({ content: 'No command found', ephemeral: true })
+        return
+      }
+
+      this.logger.debug(`Executing button handler for "${interaction.customId}" button ID`)
 
       try {
         await handler.handle(interaction)

@@ -8,7 +8,7 @@ class SendFeedbackHandler extends ModalHandler {
   public modalId: ModalId = ModalId.SendFeedback
 
   public async handle(interaction: ModalSubmitInteraction): Promise<void> {
-    const title = interaction.fields.getTextInputValue("title")
+    const topic = interaction.fields.getTextInputValue("topic")
     const message = interaction.fields.getTextInputValue("message")
 
 

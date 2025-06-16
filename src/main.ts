@@ -14,6 +14,7 @@ import config from "./infrastructures/config"
 import CommandHandler from "./abstracts/CommandHandler"
 import container from "./infrastructures/container"
 import ModalHandler from "./abstracts/ModalHandler"
+import ButtonHandler from "./abstracts/ButtonHandler"
 
 @injectable()
 class Main {
@@ -102,6 +103,8 @@ class Main {
             container.bind(CommandHandler).to(module.default).inSingletonScope()
           } else if(ModalHandler.isPrototypeOf(module.default)) {
             container.bind(ModalHandler).to(module.default).inSingletonScope()
+          } else if (ButtonHandler.isPrototypeOf(module.default)) {
+            container.bind(ButtonHandler).to(module.default).inSingletonScope()
           } else {
             container.bind(module.default).toSelf()
           }

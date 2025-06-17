@@ -10,12 +10,12 @@ class SendFeedbackButton extends ButtonHandler {
   public async handle(interaction: ButtonInteraction): Promise<void> {
     const topicInput = new TextInputBuilder()
       .setCustomId('topic')
-      .setLabel('Topic')
+      .setLabel('Judul')
       .setStyle(TextInputStyle.Short)
 
     const messageInput = new TextInputBuilder()
       .setCustomId('message')
-      .setLabel('Message')
+      .setLabel('Pesan')
       .setStyle(TextInputStyle.Paragraph);
 
     const firstActionRow = new ActionRowBuilder<TextInputBuilder>().addComponents(topicInput)
@@ -23,7 +23,7 @@ class SendFeedbackButton extends ButtonHandler {
 
     const feedbackModal = new ModalBuilder()
       .setCustomId(ModalId.SendFeedback)
-      .setTitle('Send Feedback')
+      .setTitle('Kirim Feedback')
       .addComponents(
         firstActionRow,
         secondActionRow

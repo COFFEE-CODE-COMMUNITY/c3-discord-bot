@@ -26,13 +26,25 @@ class SendFeedbackHandler extends ModalHandler {
     }
 
     const embed = new EmbedBuilder()
-      .setTitle(`Judul: ${topic}`)
-      .setDescription(`Isi pesan :\n ${message}`)
-      .setColor(0x5865f2)
-      .setFooter({
-        text: `Dari: ${interaction.user.tag}`,
-        iconURL: interaction.user.displayAvatarURL()
-      })
+      .setTitle(`Feedback from ${interaction.user.username} (${interaction.user.displayName})`)
+      .addFields(
+        {
+          name: "Mentioned",
+          value: `${interaction.user}`,
+          inline: false
+        },
+        {
+          name: "Title",
+          value: topic,
+          inline: false
+        },
+        {
+          name: "Message",
+          value: message,
+          inline: false
+        }
+      )
+      .setColor(0x1C567A)
       .setTimestamp()
 
     await channel.send({ embeds: [embed] })
